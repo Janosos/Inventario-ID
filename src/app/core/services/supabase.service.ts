@@ -3,10 +3,7 @@ import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { InventoryItem, ItemPhoto, UserProfile, UserRole } from '../models/inventory.model';
 
-const STORAGE_KEY_URL = 'inventario_supabase_url';
-const STORAGE_KEY_ANON = 'inventario_supabase_anon_key';
 const STORAGE_KEY_ITEMS = 'inventario_local_items_v1';
-const STORAGE_KEY_DEMO_ROLE = 'inventario_demo_role';
 
 // Datos iniciales solicitados por el usuario
 export const INITIAL_SEED_ITEMS: InventoryItem[] = [
@@ -90,26 +87,18 @@ export const INITIAL_SEED_ITEMS: InventoryItem[] = [
 export class SupabaseService {
   private client: SupabaseClient | null = null;
 
-  readonly isConfigured = signal<boolean>(false);
+  readonly isConfigured = signal<boolean>(true);
   readonly currentUser = signal<User | null>(null);
   readonly currentProfile = signal<UserProfile | null>(null);
-  readonly demoMode = signal<boolean>(false);
-  readonly demoRole = signal<UserRole>('admin'); // 'admin' por defecto en demo para probar todas las funciones
   readonly loading = signal<boolean>(false);
 
-  // Computado de si el usuario actual tiene permisos de Administrador
+  // Computado de si el usuario actual tiene rol de Administrador
   readonly isAdmin = computed(() => {
-    if (this.demoMode() || !this.isConfigured()) {
-      return this.demoRole() === 'admin';
-    }
     return this.currentProfile()?.role === 'admin';
   });
 
   // Rol actual formateado
   readonly activeRole = computed<UserRole>(() => {
-    if (this.demoMode() || !this.isConfigured()) {
-      return this.demoRole();
-    }
     return this.currentProfile()?.role ?? 'normal';
   });
 
@@ -118,15 +107,11 @@ export class SupabaseService {
   }
 
   /**
-   * Inicializa la conexión con Supabase leyendo de environment o localStorage
+   * Inicializa la conexión directa permanente con Supabase usando las credenciales del environment
    */
   initClient(): void {
-    const url = localStorage.getItem(STORAGE_KEY_URL) || environment.supabaseUrl;
-    const anonKey = localStorage.getItem(STORAGE_KEY_ANON) || environment.supabaseAnonKey;
-    const savedDemoRole = localStorage.getItem(STORAGE_KEY_DEMO_ROLE) as UserRole | null;
-    if (savedDemoRole) {
-      this.demoRole.set(savedDemoRole);
-    }
+    const url = environment.supabaseUrl;
+    const anonKey = environment.supabaseAnonKey;
 
     if (url && anonKey && url.startsWith('http')) {
       try {
@@ -138,7 +123,6 @@ export class SupabaseService {
           }
         });
         this.isConfigured.set(true);
-        this.demoMode.set(false);
 
         // Escuchar cambios de sesión
         this.client.auth.onAuthStateChange(async (event, session) => {
@@ -154,13 +138,12 @@ export class SupabaseService {
         this.checkInitialSession();
       } catch (err) {
         console.error('Error inicializando cliente Supabase:', err);
-        this.isConfigured.set(false);
-        this.demoMode.set(true);
       }
-    } else {
-      this.isConfigured.set(false);
-      this.demoMode.set(true);
     }
+  }
+
+  private getRedirectUrl(): string {
+    return window.location.origin + window.location.pathname;
   }
 
   private async checkInitialSession(): Promise<void> {
@@ -186,7 +169,7 @@ export class SupabaseService {
         .maybeSingle();
 
       if (error) {
-        console.warn('Error obteniendo perfil, usando perfil básico:', error);
+        console.warn('Error obteniendo perfil, usando perfil normal por defecto:', error);
         this.currentProfile.set({
           id: userId,
           email,
@@ -210,45 +193,13 @@ export class SupabaseService {
     }
   }
 
-  /**
-   * Guarda credenciales de Supabase en localStorage para conexión inmediata
-   */
-  configureCredentials(url: string, anonKey: string): boolean {
-    const trimmedUrl = url.trim();
-    const trimmedKey = anonKey.trim();
-
-    if (!trimmedUrl.startsWith('http') || !trimmedKey) {
-      return false;
-    }
-
-    localStorage.setItem(STORAGE_KEY_URL, trimmedUrl);
-    localStorage.setItem(STORAGE_KEY_ANON, trimmedKey);
-    this.initClient();
-    return true;
-  }
-
-  clearCredentials(): void {
-    localStorage.removeItem(STORAGE_KEY_URL);
-    localStorage.removeItem(STORAGE_KEY_ANON);
-    this.client = null;
-    this.isConfigured.set(false);
-    this.currentUser.set(null);
-    this.currentProfile.set(null);
-    this.demoMode.set(true);
-  }
-
-  setDemoRole(role: UserRole): void {
-    this.demoRole.set(role);
-    localStorage.setItem(STORAGE_KEY_DEMO_ROLE, role);
-  }
-
   // ==========================================
   // AUTENTICACIÓN
   // ==========================================
 
   async signIn(email: string, password: string): Promise<{ error: Error | null }> {
     if (!this.client) {
-      return { error: new Error('Supabase no está configurado aún.') };
+      return { error: new Error('Supabase no está configurado.') };
     }
     this.loading.set(true);
     try {
@@ -266,9 +217,9 @@ export class SupabaseService {
     }
   }
 
-  async signUp(email: string, password: string, fullName?: string): Promise<{ error: Error | null; isFirstUser?: boolean }> {
+  async signUp(email: string, password: string, fullName?: string): Promise<{ error: Error | null }> {
     if (!this.client) {
-      return { error: new Error('Supabase no está configurado aún.') };
+      return { error: new Error('Supabase no está configurado.') };
     }
     this.loading.set(true);
     try {
@@ -278,7 +229,8 @@ export class SupabaseService {
         options: {
           data: {
             full_name: fullName || splitEmail(email)
-          }
+          },
+          emailRedirectTo: this.getRedirectUrl()
         }
       });
       if (error) throw error;
@@ -303,11 +255,105 @@ export class SupabaseService {
   }
 
   // ==========================================
+  // GESTIÓN DE USUARIOS POR EL ADMINISTRADOR
+  // ==========================================
+
+  /**
+   * Permite al Administrador registrar nuevos usuarios (rol Admin o Normal)
+   * Usa un cliente secundario efímero con persistSession: false para NO interrumpir la sesión del Administrador
+   */
+  async adminCreateUser(
+    email: string,
+    password: string,
+    fullName: string,
+    role: UserRole
+  ): Promise<{ error: Error | null; user?: any }> {
+    if (!this.isAdmin()) {
+      return { error: new Error('Permiso denegado: solo administradores pueden registrar usuarios.') };
+    }
+
+    try {
+      const tempClient = createClient(environment.supabaseUrl, environment.supabaseAnonKey, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false
+        }
+      });
+
+      const { data, error } = await tempClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            role: role
+          },
+          emailRedirectTo: this.getRedirectUrl()
+        }
+      });
+
+      if (error) throw error;
+
+      // Asegurar el rol en la tabla public.profiles mediante la sesión del administrador
+      if (data.user && this.client) {
+        await this.client.from('profiles').update({
+          role: role,
+          full_name: fullName
+        }).eq('id', data.user.id);
+      }
+
+      return { error: null, user: data.user };
+    } catch (err: any) {
+      return { error: err };
+    }
+  }
+
+  /**
+   * Obtiene la lista de todos los perfiles de usuario registrados
+   */
+  async getProfiles(): Promise<{ profiles: UserProfile[]; error: Error | null }> {
+    if (!this.client) return { profiles: [], error: null };
+    try {
+      const { data, error } = await this.client
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return { profiles: (data as UserProfile[]) || [], error: null };
+    } catch (err: any) {
+      return { profiles: [], error: err };
+    }
+  }
+
+  /**
+   * Permite al Administrador cambiar el rol de cualquier usuario
+   */
+  async updateProfileRole(userId: string, newRole: UserRole): Promise<{ error: Error | null }> {
+    if (!this.isAdmin()) {
+      return { error: new Error('Solo los administradores pueden cambiar roles de usuario.') };
+    }
+    if (!this.client) return { error: null };
+    try {
+      const { error } = await this.client
+        .from('profiles')
+        .update({ role: newRole, updated_at: new Date().toISOString() })
+        .eq('id', userId);
+
+      if (error) throw error;
+      return { error: null };
+    } catch (err: any) {
+      return { error: err };
+    }
+  }
+
+  // ==========================================
   // GESTIÓN DEL INVENTARIO (CRUD)
   // ==========================================
 
   async getInventory(): Promise<InventoryItem[]> {
-    if (!this.client || this.demoMode()) {
+    if (!this.client) {
       return this.getLocalItems();
     }
 
@@ -321,12 +367,11 @@ export class SupabaseService {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.warn('Error consultando Supabase, usando almacenamiento local:', error);
+        console.warn('Error consultando Supabase, usando respaldo local:', error);
         return this.getLocalItems();
       }
 
       if (!data || data.length === 0) {
-        // Si la tabla está vacía en Supabase, podemos sembrar los iniciales
         return this.getLocalItems();
       }
 
@@ -342,7 +387,7 @@ export class SupabaseService {
       return { item: null, error: new Error('Permiso denegado: solo administradores pueden agregar equipos.') };
     }
 
-    if (!this.client || this.demoMode()) {
+    if (!this.client) {
       const newItem: InventoryItem = {
         ...item,
         id: 'local-' + Date.now(),
@@ -378,7 +423,7 @@ export class SupabaseService {
       return { error: new Error('Permiso denegado: solo administradores pueden modificar equipos.') };
     }
 
-    if (!this.client || this.demoMode()) {
+    if (!this.client) {
       const items = this.getLocalItems();
       const idx = items.findIndex(i => i.id === id);
       if (idx !== -1) {
@@ -409,7 +454,7 @@ export class SupabaseService {
       return { error: new Error('Permiso denegado: solo administradores pueden eliminar equipos.') };
     }
 
-    if (!this.client || this.demoMode()) {
+    if (!this.client) {
       const items = this.getLocalItems().filter(i => i.id !== id);
       this.saveLocalItems(items);
       return { error: null };
@@ -454,8 +499,7 @@ export class SupabaseService {
       };
     }
 
-    // Modo Demo / Local
-    if (!this.client || this.demoMode()) {
+    if (!this.client) {
       return new Promise(resolve => {
         const reader = new FileReader();
         reader.onload = () => {
@@ -470,7 +514,6 @@ export class SupabaseService {
             created_at: new Date().toISOString()
           };
 
-          // Actualizar en memoria local
           const items = this.getLocalItems();
           const target = items.find(i => i.id === itemId);
           if (target) {
@@ -491,7 +534,7 @@ export class SupabaseService {
       });
     }
 
-    // Modo Supabase conectado
+    // Subida a Supabase Storage
     try {
       const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
       const storagePath = `items/${itemId}/${Date.now()}_${sanitizedName}`;
@@ -511,7 +554,7 @@ export class SupabaseService {
 
       const publicUrl = publicUrlData.publicUrl;
 
-      // Registrar foto en la base de datos
+      // Registrar foto en la tabla
       const { data: photoData, error: dbError } = await this.client
         .from('inventory_item_photos')
         .insert({
@@ -545,7 +588,7 @@ export class SupabaseService {
       return { error: new Error('Permiso denegado: solo administradores pueden eliminar fotos.') };
     }
 
-    if (!this.client || this.demoMode()) {
+    if (!this.client) {
       const items = this.getLocalItems();
       const target = items.find(i => i.id === itemId);
       if (target && target.photos) {
@@ -559,12 +602,10 @@ export class SupabaseService {
     }
 
     try {
-      // Borrar de storage
       await this.client.storage
         .from(environment.storageBucket)
         .remove([photo.storage_path]);
 
-      // Borrar registro de BD
       const { error } = await this.client
         .from('inventory_item_photos')
         .delete()
@@ -576,10 +617,6 @@ export class SupabaseService {
       return { error: err };
     }
   }
-
-  // ==========================================
-  // ALMACENAMIENTO LOCAL / MOCK FALLBACK
-  // ==========================================
 
   private getLocalItems(): InventoryItem[] {
     const raw = localStorage.getItem(STORAGE_KEY_ITEMS);
@@ -600,10 +637,6 @@ export class SupabaseService {
     } catch (e) {
       console.warn('No se pudo guardar en localStorage:', e);
     }
-  }
-
-  resetLocalSeed(): void {
-    this.saveLocalItems(INITIAL_SEED_ITEMS);
   }
 }
 

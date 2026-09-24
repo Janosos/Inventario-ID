@@ -22,13 +22,13 @@ import { ThemeService } from '../../core/services/theme.service';
           <div class="brand-info">
             <div class="brand-title">
               <span>Inventario-ID</span>
-              <span class="status-indicator" [class.status-online]="supabase.isConfigured()" [title]="supabase.isConfigured() ? 'Conectado a Supabase' : 'Modo Demostración / Local'"></span>
+              <span class="status-indicator status-online" title="Conectado a Supabase"></span>
             </div>
             <span class="brand-subtitle">Control de Equipos de Cómputo</span>
           </div>
         </div>
 
-        <!-- Role Badge & Mode Switcher -->
+        <!-- Role Badge Area -->
         <div class="role-center-area">
           <div class="role-badge-container">
             <span class="role-label">Tu Rol:</span>
@@ -37,7 +37,7 @@ import { ThemeService } from '../../core/services/theme.service';
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
                 </svg>
-                ADMINISTRADOR (Poder Total)
+                ADMINISTRADOR
               </span>
             } @else {
               <span class="badge badge-normal">
@@ -48,36 +48,26 @@ import { ThemeService } from '../../core/services/theme.service';
                 USUARIO NORMAL (Solo Lectura)
               </span>
             }
-
-            <!-- Switcher rápido de roles para pruebas en vivo -->
-            <button 
-              class="btn btn-ghost btn-sm role-toggle-btn"
-              (click)="toggleRole()"
-              [title]="'Cambiar a ' + (supabase.isAdmin() ? 'Usuario Normal' : 'Administrador') + ' para probar permisos'">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                <path d="M3 3v5h5"></path>
-                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
-                <path d="M16 21h5v-5"></path>
-              </svg>
-              <span>Probar como {{ supabase.isAdmin() ? 'Normal' : 'Admin' }}</span>
-            </button>
           </div>
         </div>
 
         <!-- Right Controls -->
         <div class="actions-group">
-          <!-- Connection / Config Supabase Button -->
-          <button 
-            class="btn btn-secondary btn-sm connection-btn"
-            [class.connection-active]="supabase.isConfigured()"
-            (click)="openConfig.emit()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 20h9"></path>
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-            </svg>
-            <span>{{ supabase.isConfigured() ? 'Supabase Conectado' : 'Configurar Supabase' }}</span>
-          </button>
+          <!-- Admin User Management Button -->
+          @if (supabase.isAdmin()) {
+            <button 
+              class="btn btn-secondary btn-sm user-mgmt-btn"
+              (click)="openUsers.emit()"
+              title="Gestionar usuarios y crear cuentas de Administrador o Normal">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>Gestionar Usuarios</span>
+            </button>
+          }
 
           <!-- Theme Toggle -->
           <button 
@@ -190,13 +180,8 @@ import { ThemeService } from '../../core/services/theme.service';
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background-color: var(--accent-amber);
-      display: inline-block;
-      box-shadow: 0 0 8px var(--accent-amber);
-    }
-
-    .status-indicator.status-online {
       background-color: var(--accent-emerald);
+      display: inline-block;
       box-shadow: 0 0 8px var(--accent-emerald);
     }
 
@@ -226,29 +211,15 @@ import { ThemeService } from '../../core/services/theme.service';
       font-weight: 500;
     }
 
-    .role-toggle-btn {
-      font-size: 0.7rem;
-      padding: 0.2rem 0.5rem;
-      height: auto;
-      border-radius: var(--radius-full);
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-primary);
-    }
-
     .actions-group {
       display: flex;
       align-items: center;
       gap: 0.65rem;
     }
 
-    .connection-btn {
+    .user-mgmt-btn {
       font-size: 0.775rem;
-    }
-
-    .connection-active {
-      border-color: rgba(16, 185, 129, 0.4);
-      color: var(--accent-emerald);
+      border-color: rgba(99, 102, 241, 0.3);
     }
 
     .user-menu {
@@ -263,7 +234,7 @@ import { ThemeService } from '../../core/services/theme.service';
 
     .user-email {
       font-size: 0.775rem;
-      max-width: 140px;
+      max-width: 150px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -285,17 +256,6 @@ export class NavbarComponent {
   readonly supabase = inject(SupabaseService);
   readonly theme = inject(ThemeService);
 
-  @Output() openConfig = new EventEmitter<void>();
+  @Output() openUsers = new EventEmitter<void>();
   @Output() openAuth = new EventEmitter<void>();
-
-  toggleRole(): void {
-    if (this.supabase.demoMode() || !this.supabase.isConfigured()) {
-      const nextRole = this.supabase.demoRole() === 'admin' ? 'normal' : 'admin';
-      this.supabase.setDemoRole(nextRole);
-    } else {
-      // Si está en Supabase conectado, advertir o simular rol
-      const nextRole = this.supabase.demoRole() === 'admin' ? 'normal' : 'admin';
-      this.supabase.setDemoRole(nextRole);
-    }
-  }
 }

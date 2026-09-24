@@ -1,6 +1,6 @@
 <div class="app-root-layout">
   <app-navbar 
-    (openConfig)="showConfigModal.set(true)" 
+    (openUsers)="showUserManagerModal.set(true)" 
     (openAuth)="showAuthModal.set(true)">
   </app-navbar>
 
@@ -10,11 +10,11 @@
 
   <app-toast-container></app-toast-container>
 
-  @if (showConfigModal()) {
-    <app-config-modal (close)="showConfigModal.set(false)"></app-config-modal>
-  }
-
   @if (showAuthModal()) {
     <app-auth-modal (close)="showAuthModal.set(false)"></app-auth-modal>
+  }
+
+  @if (showUserManagerModal()) {
+    <app-user-manager-modal (close)="showUserManagerModal.set(false)"></app-user-manager-modal>
   }
 </div>

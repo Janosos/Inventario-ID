@@ -15,7 +15,7 @@ import { ToastService } from '../../core/services/toast.service';
         <div class="modal-header">
           <div class="header-titles">
             <h2 class="modal-title">{{ isRegister() ? 'Crear Cuenta' : 'Iniciar Sesión' }}</h2>
-            <p class="modal-subtitle">Acceso a Inventario-ID y control de roles</p>
+            <p class="modal-subtitle">Acceso seguro a Inventario-ID</p>
           </div>
           <button class="btn btn-ghost btn-icon" (click)="close.emit()" aria-label="Cerrar modal">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -29,22 +29,12 @@ import { ToastService } from '../../core/services/toast.service';
         <div class="role-explain-box">
           <div class="role-explain-item">
             <span class="badge badge-admin">Rol Admin</span>
-            <p>Poder total: crear equipos, editar especificaciones, subir/eliminar fotos y borrar registros.</p>
+            <p>Gestión completa: agregar equipos, editar especificaciones, subir fotografías y gestionar usuarios.</p>
           </div>
           <div class="role-explain-item">
             <span class="badge badge-normal">Rol Normal</span>
             <p>Solo lectura: consultar catálogo, buscar por Service Tag, filtrar y ver fotos.</p>
           </div>
-          @if (!supabase.isConfigured()) {
-            <div class="demo-notice">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-              </svg>
-              <span>Actualmente estás en <strong>Modo Demostración</strong>. Puedes alternar el rol Admin / Normal directamente desde la barra superior.</span>
-            </div>
-          }
         </div>
 
         <!-- Form -->
@@ -176,18 +166,6 @@ import { ToastService } from '../../core/services/toast.service';
       margin: 0;
     }
 
-    .demo-notice {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      background: rgba(2, 132, 199, 0.08);
-      border: 1px solid rgba(2, 132, 199, 0.2);
-      border-radius: var(--radius-md);
-      font-size: 0.75rem;
-      color: var(--brand-primary);
-    }
-
     .auth-form {
       display: flex;
       flex-direction: column;
@@ -266,15 +244,6 @@ export class AuthModalComponent {
 
   async onSubmit(): Promise<void> {
     if (!this.email || !this.password) return;
-
-    if (!this.supabase.isConfigured()) {
-      this.toast.info(
-        'Modo Demostración Activo',
-        'Supabase aún no está enlazado con credenciales. Puedes alternar el rol de Administrador o Usuario Normal arriba en la barra.'
-      );
-      this.close.emit();
-      return;
-    }
 
     this.loading.set(true);
     try {
