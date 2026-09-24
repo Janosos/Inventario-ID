@@ -45,20 +45,8 @@ import { ThemeService } from '../../core/services/theme.service';
           }
         </div>
 
-        <!-- Right: Status, Actions, Profile -->
+        <!-- Right: Actions, Theme, Profile -->
         <div class="actions-cluster">
-          <!-- Connection Status Telemetry -->
-          <div class="telemetry-badge">
-            <div class="beacon-wrap">
-              <span class="beacon-ping"></span>
-              <span class="beacon-dot"></span>
-            </div>
-            <div class="telemetry-text">
-              <span class="telemetry-status">Supabase Conectado</span>
-              <span class="telemetry-sub">Sync: En vivo</span>
-            </div>
-          </div>
-
           <!-- Admin User Management Action -->
           @if (supabase.isAdmin()) {
             <button class="btn btn-secondary btn-sm admin-btn" (click)="openUsers.emit()" title="Gestionar Usuarios y Roles">
@@ -111,19 +99,19 @@ import { ThemeService } from '../../core/services/theme.service';
       right: 0;
       height: 4rem;
       z-index: 50;
-      background-color: rgba(15, 19, 28, 0.92);
+      background-color: rgba(15, 19, 28, 0.94);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border-subtle);
       box-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
     }
 
-    .dark .navbar-root {
-      background-color: rgba(15, 19, 28, 0.92);
+    html.dark .navbar-root {
+      background-color: rgba(15, 19, 28, 0.94);
     }
 
     :host-context(.light) .navbar-root {
-      background-color: rgba(255, 255, 255, 0.94);
+      background-color: rgba(255, 255, 255, 0.96);
     }
 
     .navbar-inner {
@@ -259,69 +247,6 @@ import { ThemeService } from '../../core/services/theme.service';
       gap: 0.85rem;
     }
 
-    .telemetry-badge {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.35rem 0.65rem;
-      border-radius: var(--radius-md);
-      background: var(--surface-low);
-      border: 1px solid var(--border-subtle);
-    }
-
-    .beacon-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 0.65rem;
-      height: 0.65rem;
-    }
-
-    .beacon-ping {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background-color: var(--secondary);
-      opacity: 0.75;
-      animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
-    }
-
-    .beacon-dot {
-      position: relative;
-      width: 0.45rem;
-      height: 0.45rem;
-      border-radius: 50%;
-      background-color: var(--secondary);
-    }
-
-    @keyframes ping {
-      75%, 100% {
-        transform: scale(2);
-        opacity: 0;
-      }
-    }
-
-    .telemetry-text {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.15;
-    }
-
-    .telemetry-status {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      font-weight: 600;
-      color: var(--secondary);
-    }
-
-    .telemetry-sub {
-      font-family: var(--font-mono);
-      font-size: 0.625rem;
-      color: var(--text-outline);
-    }
-
     .admin-btn {
       border-color: rgba(14, 165, 233, 0.3);
     }
@@ -390,9 +315,6 @@ import { ThemeService } from '../../core/services/theme.service';
 
     @media (max-width: 900px) {
       .role-center-cluster {
-        display: none;
-      }
-      .telemetry-badge {
         display: none;
       }
       .user-text-meta {

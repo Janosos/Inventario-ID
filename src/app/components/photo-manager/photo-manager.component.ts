@@ -77,15 +77,6 @@ import { ToastService } from '../../core/services/toast.service';
                 </button>
               </div>
             </div>
-          } @else {
-            <div class="read-only-banner">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-              </svg>
-              <span>Estás en modo lectura (Usuario Normal). Solo los administradores pueden subir o eliminar fotos.</span>
-            </div>
           }
 
           <!-- Photos Grid / Empty State -->
@@ -174,9 +165,9 @@ import { ToastService } from '../../core/services/toast.service';
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.72);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(5, 7, 12, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       z-index: 200;
       display: flex;
       align-items: center;
@@ -190,8 +181,8 @@ import { ToastService } from '../../core/services/toast.service';
       max-height: 90vh;
       display: flex;
       flex-direction: column;
-      background: var(--bg-surface-elevated);
-      border: 1px solid var(--border-subtle);
+      background-color: #1a1e29 !important;
+      border: 1px solid var(--border-hover);
       border-radius: var(--radius-xl);
       box-shadow: var(--shadow-modal);
       overflow: hidden;
@@ -200,6 +191,7 @@ import { ToastService } from '../../core/services/toast.service';
     .modal-header {
       padding: 1.25rem 1.5rem;
       border-bottom: 1px solid var(--border-subtle);
+      background-color: #1f2430;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
@@ -215,6 +207,7 @@ import { ToastService } from '../../core/services/toast.service';
     .modal-title {
       font-size: 1.2rem;
       font-weight: 700;
+      color: var(--text-primary);
     }
 
     .modal-subtitle {
@@ -232,21 +225,22 @@ import { ToastService } from '../../core/services/toast.service';
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      background-color: #161922;
     }
 
     /* Dropzone Upload */
     .upload-dropzone {
       border: 2px dashed var(--border-hover);
       border-radius: var(--radius-lg);
-      background-color: var(--bg-muted);
+      background-color: #1a1e29;
       padding: 1.5rem;
       cursor: pointer;
       transition: all var(--duration-fast) var(--ease-out);
     }
 
     .upload-dropzone:hover, .upload-dropzone.drag-over {
-      border-color: var(--brand-primary);
-      background-color: var(--brand-glow);
+      border-color: var(--primary);
+      background-color: rgba(14, 165, 233, 0.08);
     }
 
     .dropzone-content {
@@ -261,8 +255,8 @@ import { ToastService } from '../../core/services/toast.service';
       width: 3.25rem;
       height: 3.25rem;
       border-radius: var(--radius-full);
-      background-color: var(--bg-surface);
-      color: var(--brand-primary);
+      background-color: #1f2430;
+      color: var(--primary);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -286,18 +280,6 @@ import { ToastService } from '../../core/services/toast.service';
       color: var(--text-muted);
     }
 
-    .read-only-banner {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      background-color: var(--bg-muted);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 0.75rem 1rem;
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-    }
-
     .section-title-row {
       margin-bottom: 0.75rem;
     }
@@ -305,6 +287,7 @@ import { ToastService } from '../../core/services/toast.service';
     .section-title-row h3 {
       font-size: 0.95rem;
       font-weight: 600;
+      color: var(--text-primary);
     }
 
     .empty-photos {
@@ -316,8 +299,9 @@ import { ToastService } from '../../core/services/toast.service';
       color: var(--text-muted);
       text-align: center;
       gap: 0.45rem;
-      background-color: var(--bg-muted);
+      background-color: #1a1e29;
       border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
     }
 
     .empty-photos p {
@@ -342,7 +326,7 @@ import { ToastService } from '../../core/services/toast.service';
       border-radius: var(--radius-md);
       overflow: hidden;
       border: 1px solid var(--border-subtle);
-      background-color: var(--bg-muted);
+      background-color: #1a1e29;
       cursor: pointer;
       box-shadow: var(--shadow-sm);
       transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
@@ -407,14 +391,14 @@ import { ToastService } from '../../core/services/toast.service';
       display: flex;
       justify-content: flex-end;
       gap: 0.75rem;
-      background-color: var(--bg-surface);
+      background-color: #1f2430;
     }
 
     /* Lightbox */
     .lightbox-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.92);
+      background: rgba(0, 0, 0, 0.95);
       z-index: 300;
       display: flex;
       align-items: center;
@@ -461,7 +445,7 @@ import { ToastService } from '../../core/services/toast.service';
       width: 1.5rem;
       height: 1.5rem;
       border: 2px solid var(--border-subtle);
-      border-top-color: var(--brand-primary);
+      border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
     }
@@ -494,6 +478,7 @@ export class PhotoManagerComponent {
   }
 
   onDragOver(event: DragEvent): void {
+    if (!this.supabase.isAdmin()) return;
     event.preventDefault();
     event.stopPropagation();
     this.isDragging.set(true);
@@ -506,6 +491,10 @@ export class PhotoManagerComponent {
   }
 
   onDrop(event: DragEvent): void {
+    if (!this.supabase.isAdmin()) {
+      this.toast.error('Acceso denegado', 'Solo el Administrador puede subir fotos.');
+      return;
+    }
     event.preventDefault();
     event.stopPropagation();
     this.isDragging.set(false);
@@ -517,6 +506,10 @@ export class PhotoManagerComponent {
   }
 
   onFileSelected(event: Event): void {
+    if (!this.supabase.isAdmin()) {
+      this.toast.error('Acceso denegado', 'Solo el Administrador puede subir fotos.');
+      return;
+    }
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.processFile(input.files[0]);
@@ -525,6 +518,11 @@ export class PhotoManagerComponent {
   }
 
   async processFile(file: File): Promise<void> {
+    if (!this.supabase.isAdmin()) {
+      this.toast.error('Acceso denegado', 'Solo el Administrador puede subir fotos.');
+      return;
+    }
+
     // Validación de 10 MB estricta
     const MAX_MB = 10;
     const MAX_BYTES = MAX_MB * 1024 * 1024;
@@ -569,6 +567,11 @@ export class PhotoManagerComponent {
   }
 
   async confirmDeletePhoto(photo: ItemPhoto): Promise<void> {
+    if (!this.supabase.isAdmin()) {
+      this.toast.error('Acceso denegado', 'Solo el Administrador puede eliminar fotos.');
+      return;
+    }
+
     if (!confirm(`¿Eliminar la foto "${photo.file_name}"?`)) return;
 
     const { error } = await this.supabase.deletePhoto(photo, this.item.id);

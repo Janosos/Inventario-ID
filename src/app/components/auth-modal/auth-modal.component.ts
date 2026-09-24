@@ -25,18 +25,6 @@ import { ToastService } from '../../core/services/toast.service';
           </button>
         </div>
 
-        <!-- Role Info Banner -->
-        <div class="role-explain-box">
-          <div class="role-explain-item">
-            <span class="badge badge-admin">Rol Admin</span>
-            <p>Gestión completa: agregar equipos, editar especificaciones, subir fotografías y gestionar usuarios.</p>
-          </div>
-          <div class="role-explain-item">
-            <span class="badge badge-normal">Rol Normal</span>
-            <p>Solo lectura: consultar catálogo, buscar por Service Tag, filtrar y ver fotos.</p>
-          </div>
-        </div>
-
         <!-- Form -->
         <form (ngSubmit)="onSubmit()" class="auth-form">
           <div class="modal-body">
@@ -97,9 +85,9 @@ import { ToastService } from '../../core/services/toast.service';
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.72);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(5, 7, 12, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       z-index: 200;
       display: flex;
       align-items: center;
@@ -112,8 +100,8 @@ import { ToastService } from '../../core/services/toast.service';
       max-width: 480px;
       display: flex;
       flex-direction: column;
-      background: var(--bg-surface-elevated);
-      border: 1px solid var(--border-subtle);
+      background-color: #1a1e29 !important;
+      border: 1px solid var(--border-hover);
       border-radius: var(--radius-xl);
       box-shadow: var(--shadow-modal);
       overflow: hidden;
@@ -122,6 +110,7 @@ import { ToastService } from '../../core/services/toast.service';
     .modal-header {
       padding: 1.25rem 1.5rem;
       border-bottom: 1px solid var(--border-subtle);
+      background-color: #1f2430;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
@@ -137,6 +126,7 @@ import { ToastService } from '../../core/services/toast.service';
     .modal-title {
       font-size: 1.15rem;
       font-weight: 700;
+      color: var(--text-primary);
     }
 
     .modal-subtitle {
@@ -144,38 +134,18 @@ import { ToastService } from '../../core/services/toast.service';
       color: var(--text-muted);
     }
 
-    .role-explain-box {
-      background-color: var(--bg-muted);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 1rem 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .role-explain-item {
-      display: flex;
-      align-items: baseline;
-      gap: 0.65rem;
-    }
-
-    .role-explain-item p {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      line-height: 1.35;
-      margin: 0;
-    }
-
     .auth-form {
       display: flex;
       flex-direction: column;
+      background-color: #161922;
     }
 
     .modal-body {
-      padding: 1.25rem 1.5rem;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      background-color: #161922;
     }
 
     .form-group {
@@ -191,7 +161,7 @@ import { ToastService } from '../../core/services/toast.service';
     }
 
     .required {
-      color: var(--accent-rose);
+      color: var(--error);
     }
 
     .modal-footer {
@@ -201,7 +171,7 @@ import { ToastService } from '../../core/services/toast.service';
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      background-color: var(--bg-surface);
+      background-color: #1f2430;
     }
 
     .switch-tab-btn {

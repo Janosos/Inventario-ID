@@ -13,46 +13,11 @@ import { CommonModule } from '@angular/common';
         </div>
 
         <nav class="sidebar-nav">
-          <a class="nav-item" (click)="selectTab('general')" [class.active]="activeTab === 'general'">
-            <span class="material-symbols-outlined">dashboard</span>
-            <span>Vista General</span>
-          </a>
-
-          <a class="nav-item" (click)="selectTab('inventario')" [class.active]="activeTab === 'inventario'">
+          <a class="nav-item active" (click)="selectTab('inventario')">
             <span class="material-symbols-outlined">devices</span>
             <span>Inventario de Equipos</span>
           </a>
-
-          <a class="nav-item" (click)="selectTab('asignaciones')" [class.active]="activeTab === 'asignaciones'">
-            <span class="material-symbols-outlined">assignment_ind</span>
-            <span>Asignaciones & Custodia</span>
-          </a>
-
-          <a class="nav-item" (click)="selectTab('mantenimiento')" [class.active]="activeTab === 'mantenimiento'">
-            <span class="material-symbols-outlined">build_circle</span>
-            <span>Mantenimiento & Bajas</span>
-          </a>
-
-          <a class="nav-item" (click)="selectTab('auditorias')" [class.active]="activeTab === 'auditorias'">
-            <span class="material-symbols-outlined">analytics</span>
-            <span>Auditorías & Reportes</span>
-          </a>
         </nav>
-      </div>
-
-      <!-- Sync Status Widget -->
-      <div class="sync-telemetry-box">
-        <div class="sync-telemetry-header">
-          <span class="sync-label">CAPACIDAD SYNC</span>
-          <span class="sync-percent">99.2%</span>
-        </div>
-        <div class="sync-progress-track">
-          <div class="sync-progress-fill" style="width: 99.2%"></div>
-        </div>
-        <div class="sync-node-row">
-          <span class="sync-node-label">Nodo Central</span>
-          <span class="sync-node-val">Supabase Cloud</span>
-        </div>
       </div>
     </aside>
 
@@ -119,7 +84,7 @@ import { CommonModule } from '@angular/common';
       box-shadow: 0 2px 10px rgba(14, 165, 233, 0.3);
     }
 
-    .dark .nav-item.active {
+    html.dark .nav-item.active {
       background-color: var(--primary-container);
       color: #00263d;
       font-weight: 700;
@@ -127,70 +92,6 @@ import { CommonModule } from '@angular/common';
 
     .nav-item .material-symbols-outlined {
       font-size: 20px;
-    }
-
-    /* Telemetry Box */
-    .sync-telemetry-box {
-      background-color: var(--surface-low);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 0.85rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
-    }
-
-    .sync-telemetry-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .sync-label {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-    }
-
-    .sync-percent {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--secondary);
-    }
-
-    .sync-progress-track {
-      width: 100%;
-      height: 5px;
-      background-color: var(--surface-high);
-      border-radius: var(--radius-full);
-      overflow: hidden;
-    }
-
-    .sync-progress-fill {
-      height: 100%;
-      background-color: var(--secondary);
-      border-radius: var(--radius-full);
-    }
-
-    .sync-node-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.7rem;
-      padding-top: 0.2rem;
-    }
-
-    .sync-node-label {
-      color: var(--text-outline);
-    }
-
-    .sync-node-val {
-      font-family: var(--font-mono);
-      color: var(--primary);
-      font-weight: 600;
     }
 
     .sidebar-backdrop {
@@ -219,10 +120,7 @@ export class SidebarComponent {
   @Output() closeSidebar = new EventEmitter<void>();
   @Output() tabSelected = new EventEmitter<string>();
 
-  activeTab = 'inventario';
-
   selectTab(tab: string): void {
-    this.activeTab = tab;
     this.tabSelected.emit(tab);
     this.closeSidebar.emit();
   }

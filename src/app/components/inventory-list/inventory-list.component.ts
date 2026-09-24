@@ -197,11 +197,13 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
             </button>
           </div>
 
-          <!-- Export Action -->
-          <button type="button" class="btn btn-secondary btn-sm" (click)="exportToCSV()" title="Exportar inventario CSV">
-            <span class="material-symbols-outlined icon-18">file_download</span>
-            <span class="btn-text">Exportar CSV</span>
-          </button>
+          <!-- Export Action (Admin Only) -->
+          @if (supabase.isAdmin()) {
+            <button type="button" class="btn btn-secondary btn-sm" (click)="exportToCSV()" title="Exportar inventario CSV">
+              <span class="material-symbols-outlined icon-18">file_download</span>
+              <span class="btn-text">Exportar CSV</span>
+            </button>
+          }
 
           <!-- New Equipment Action (Admin Only) -->
           @if (supabase.isAdmin()) {
@@ -345,13 +347,25 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
 
                   <!-- Footer Actions Row -->
                   <div class="card-footer-actions">
-                    <button 
-                      type="button" 
-                      class="btn btn-secondary btn-sm flex-1" 
-                      (click)="openPhotoManager(item)">
-                      <span class="material-symbols-outlined icon-18">add_a_photo</span>
-                      <span>{{ (item.photos?.length || 0) > 0 ? 'Ver Fotos (' + item.photos?.length + ')' : 'Subir Foto' }}</span>
-                    </button>
+                    <!-- Photo Action: Admin can upload/view; Normal user can ONLY view -->
+                    @if (supabase.isAdmin()) {
+                      <button 
+                        type="button" 
+                        class="btn btn-secondary btn-sm flex-1" 
+                        (click)="openPhotoManager(item)">
+                        <span class="material-symbols-outlined icon-18">add_a_photo</span>
+                        <span>{{ (item.photos?.length || 0) > 0 ? 'Fotos (' + item.photos?.length + ')' : 'Subir Foto' }}</span>
+                      </button>
+                    } @else {
+                      <button 
+                        type="button" 
+                        class="btn btn-secondary btn-sm flex-1" 
+                        [disabled]="(item.photos?.length || 0) === 0"
+                        (click)="openPhotoManager(item)">
+                        <span class="material-symbols-outlined icon-18">image</span>
+                        <span>{{ (item.photos?.length || 0) > 0 ? 'Ver Fotos (' + item.photos?.length + ')' : 'Sin Fotos' }}</span>
+                      </button>
+                    }
 
                     @if (supabase.isAdmin()) {
                       <button 
@@ -436,7 +450,12 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
                     </td>
                     <td class="text-right">
                       <div class="table-action-btns">
-                        <button type="button" class="btn-table-action" (click)="openPhotoManager(item)" title="Ver / Subir Fotos">
+                        <button 
+                          type="button" 
+                          class="btn-table-action" 
+                          [disabled]="!supabase.isAdmin() && (item.photos?.length || 0) === 0"
+                          (click)="openPhotoManager(item)" 
+                          [title]="supabase.isAdmin() ? 'Ver / Subir Fotos' : 'Ver Fotos'">
                           <span class="material-symbols-outlined icon-18">image</span>
                         </button>
                         @if (supabase.isAdmin()) {
@@ -456,25 +475,6 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
           </section>
         }
       }
-
-      <!-- Lifecycle Quick Audit Bar -->
-      <section class="lifecycle-bar">
-        <div class="lifecycle-left">
-          <div class="lifecycle-icon-wrap">
-            <span class="material-symbols-outlined icon-22 text-primary">verified</span>
-          </div>
-          <div class="lifecycle-texts">
-            <span class="lifecycle-title">Ciclo de Vida & Cumplimiento TI</span>
-            <span class="lifecycle-desc">Última conciliación con base de datos central completada exitosamente</span>
-          </div>
-        </div>
-        <div class="lifecycle-right">
-          <button type="button" class="btn btn-secondary btn-sm" (click)="verifyDellWarranties()">
-            <span class="material-symbols-outlined icon-18">sync</span>
-            <span>Verificar Garantías Dell</span>
-          </button>
-        </div>
-      </section>
 
       <!-- Modals -->
       @if (showItemModal()) {
@@ -1378,59 +1378,6 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
       text-align: right;
     }
 
-    /* LIFECYCLE BAR */
-    .lifecycle-bar {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      padding: 1rem 1.25rem;
-      border-radius: var(--radius-lg);
-      background-color: var(--surface-low);
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    }
-
-    @media (min-width: 640px) {
-      .lifecycle-bar {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-      }
-    }
-
-    .lifecycle-left {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-    }
-
-    .lifecycle-icon-wrap {
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: var(--radius-md);
-      background-color: rgba(137, 206, 255, 0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(137, 206, 255, 0.2);
-    }
-
-    .lifecycle-texts {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .lifecycle-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .lifecycle-desc {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
     /* STATES & SPINNER */
     .state-container {
       padding: 3.5rem 1.5rem;
@@ -1688,14 +1635,12 @@ export class InventoryListComponent implements OnInit {
     }
   }
 
-  verifyDellWarranties(): void {
-    this.toast.info('Comprobando integridad', 'Consultando Service Tags con la API de soporte Dell...');
-    setTimeout(() => {
-      this.toast.success('Integridad Verificada', 'Todos los Service Tags están sincronizados y vigentes.');
-    }, 1200);
-  }
-
   exportToCSV(): void {
+    if (!this.supabase.isAdmin()) {
+      this.toast.error('Acceso denegado', 'Solo el Administrador tiene permisos para exportar información.');
+      return;
+    }
+
     const data = this.filteredItems();
     if (data.length === 0) {
       this.toast.warning('Sin datos', 'No hay equipos para exportar.');

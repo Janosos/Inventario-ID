@@ -182,9 +182,9 @@ import { ToastService } from '../../core/services/toast.service';
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.72);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(5, 7, 12, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       z-index: 200;
       display: flex;
       align-items: center;
@@ -198,8 +198,8 @@ import { ToastService } from '../../core/services/toast.service';
       max-height: 90vh;
       display: flex;
       flex-direction: column;
-      background: var(--bg-surface-elevated);
-      border: 1px solid var(--border-subtle);
+      background-color: #1a1e29 !important;
+      border: 1px solid var(--border-hover);
       border-radius: var(--radius-xl);
       box-shadow: var(--shadow-modal);
       overflow: hidden;
@@ -208,6 +208,7 @@ import { ToastService } from '../../core/services/toast.service';
     .modal-header {
       padding: 1.25rem 1.5rem;
       border-bottom: 1px solid var(--border-subtle);
+      background-color: #1f2430;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
@@ -223,6 +224,7 @@ import { ToastService } from '../../core/services/toast.service';
     .modal-title {
       font-size: 1.2rem;
       font-weight: 700;
+      color: var(--text-primary);
     }
 
     .modal-subtitle {
@@ -236,6 +238,7 @@ import { ToastService } from '../../core/services/toast.service';
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      background-color: #161922;
     }
 
     .box-title {
@@ -248,7 +251,7 @@ import { ToastService } from '../../core/services/toast.service';
     }
 
     .create-user-box {
-      background: var(--bg-muted);
+      background: #1a1e29;
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
       padding: 1.25rem;
@@ -276,7 +279,7 @@ import { ToastService } from '../../core/services/toast.service';
     }
 
     .required {
-      color: var(--accent-rose);
+      color: var(--error);
     }
 
     .create-actions {
@@ -301,7 +304,7 @@ import { ToastService } from '../../core/services/toast.service';
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       overflow-x: auto;
-      background: var(--bg-surface);
+      background: #1a1e29;
     }
 
     .users-table {
@@ -319,7 +322,7 @@ import { ToastService } from '../../core/services/toast.service';
       letter-spacing: 0.04em;
       color: var(--text-muted);
       border-bottom: 1px solid var(--border-subtle);
-      background-color: var(--bg-muted);
+      background-color: #1f2430;
     }
 
     .users-table td {
@@ -330,7 +333,7 @@ import { ToastService } from '../../core/services/toast.service';
     }
 
     .users-table tbody tr:hover {
-      background-color: var(--bg-surface-hover);
+      background-color: rgba(255, 255, 255, 0.03);
     }
 
     .user-email-text {
@@ -340,7 +343,7 @@ import { ToastService } from '../../core/services/toast.service';
 
     .current-user-tag {
       font-size: 0.7rem;
-      color: var(--brand-primary);
+      color: var(--primary);
       margin-left: 0.35rem;
       font-weight: 600;
     }
@@ -354,7 +357,7 @@ import { ToastService } from '../../core/services/toast.service';
       border-top: 1px solid var(--border-subtle);
       display: flex;
       justify-content: flex-end;
-      background-color: var(--bg-surface);
+      background-color: #1f2430;
     }
 
     .loading-state, .empty-users {
@@ -372,7 +375,7 @@ import { ToastService } from '../../core/services/toast.service';
       width: 1.5rem;
       height: 1.5rem;
       border: 2px solid var(--border-subtle);
-      border-top-color: var(--brand-primary);
+      border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
     }
