@@ -949,6 +949,11 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
       color: var(--tertiary);
     }
 
+    .status-para_piezas {
+      background-color: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+    }
+
     .status-baja {
       background-color: rgba(255, 180, 171, 0.15);
       color: var(--error);
@@ -1516,6 +1521,7 @@ export class InventoryListComponent implements OnInit {
       case 'disponible': return 'Disponible';
       case 'en_uso': return 'En Uso';
       case 'mantenimiento': return 'Mantenimiento';
+      case 'para_piezas': return 'Para piezas';
       case 'baja': return 'Baja';
       default: return status;
     }

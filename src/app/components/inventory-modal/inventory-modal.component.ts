@@ -157,6 +157,7 @@ import { ToastService } from '../../core/services/toast.service';
                   <option value="disponible">Disponible</option>
                   <option value="en_uso">En Uso</option>
                   <option value="mantenimiento">Mantenimiento</option>
+                  <option value="para_piezas">Para piezas</option>
                   <option value="baja">Baja</option>
                 </select>
               </div>

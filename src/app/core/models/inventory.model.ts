@@ -2,7 +2,7 @@ export type UserRole = 'admin' | 'normal';
 
 export type ItemCategory = 'Laptop' | 'Monitor' | 'Desktop' | 'Accesorio' | 'Servidor' | 'Otro';
 
-export type ItemStatus = 'disponible' | 'en_uso' | 'mantenimiento' | 'baja';
+export type ItemStatus = 'disponible' | 'en_uso' | 'mantenimiento' | 'baja' | 'para_piezas';
 
 export interface UserProfile {
   id: string;

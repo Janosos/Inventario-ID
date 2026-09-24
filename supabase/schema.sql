@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS public.inventory_items (
     specifications TEXT,                        -- Ej: 'i5 4ta 8gb 120 HDD'
     observations TEXT,                          -- Ej: 'Cuenta con cargador'
     quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity >= 0),
-    status TEXT NOT NULL DEFAULT 'disponible' CHECK (status IN ('disponible', 'en_uso', 'mantenimiento', 'baja')),
+    status TEXT NOT NULL DEFAULT 'disponible' CHECK (status IN ('disponible', 'en_uso', 'mantenimiento', 'para_piezas', 'baja')),
     location TEXT DEFAULT 'Oficina / Almacén',
     assigned_to TEXT,
     main_photo_url TEXT,
@@ -322,4 +322,8 @@ ON CONFLICT (id) DO NOTHING;
 -- NOTA IMPORTANTE PARA GESTIONAR ROLES MANUALMENTE:
 -- Para convertir a un usuario específico en Administrador de inmediato, ejecuta:
 -- UPDATE public.profiles SET role = 'admin' WHERE email = 'tu_correo@ejemplo.com';
+--
+-- PARA ACTUALIZAR LA RESTRICCIÓN DE ESTADOS ('para_piezas') EN SUPABASE SI YA CREASTE LA TABLA:
+-- ALTER TABLE public.inventory_items DROP CONSTRAINT IF EXISTS inventory_items_status_check;
+-- ALTER TABLE public.inventory_items ADD CONSTRAINT inventory_items_status_check CHECK (status IN ('disponible', 'en_uso', 'mantenimiento', 'para_piezas', 'baja'));
 -- ====================================================================================
