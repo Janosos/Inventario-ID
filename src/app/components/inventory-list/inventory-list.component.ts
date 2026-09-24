@@ -99,7 +99,7 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
             id="equipmentSearch"
             type="text" 
             [(ngModel)]="searchQuery" 
-            placeholder="Buscar por equipo, Service Tag (ST), Gorilla, especificación o custodio..." 
+            placeholder="Buscar por equipo, ST, Gorilla, modelo..." 
             class="toolbar-input" />
           @if (searchQuery) {
             <button class="clear-btn" (click)="searchQuery = ''" title="Limpiar búsqueda">
@@ -483,19 +483,14 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
     /* TELEMETRY KPI GRID */
     .telemetry-grid {
       display: grid;
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem;
     }
 
-    @media (min-width: 640px) {
-      .telemetry-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (min-width: 1280px) {
+    @media (min-width: 1024px) {
       .telemetry-grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
       }
     }
 
@@ -1325,6 +1320,177 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
     .icon-20 { font-size: 20px; }
     .icon-22 { font-size: 22px; }
     .icon-24 { font-size: 24px; }
+
+    /* MOBILE OPTIMIZATIONS */
+    @media (max-width: 640px) {
+      .dashboard-container {
+        padding: 0.75rem 0.5rem;
+        gap: 0.75rem;
+      }
+
+      .telemetry-card {
+        padding: 0.65rem 0.75rem;
+      }
+
+      .telemetry-icon-box {
+        width: 1.85rem;
+        height: 1.85rem;
+      }
+
+      .telemetry-icon-box .material-symbols-outlined {
+        font-size: 16px;
+      }
+
+      .telemetry-metric {
+        font-size: 1.25rem;
+        line-height: 1.35rem;
+      }
+
+      .telemetry-label {
+        font-size: 0.58rem;
+        letter-spacing: 0.02em;
+      }
+
+      .telemetry-sub {
+        display: none;
+      }
+
+      .telemetry-value-row {
+        margin-top: 0.15rem;
+        gap: 0.25rem;
+      }
+
+      .telemetry-trend, .telemetry-unit {
+        font-size: 0.6rem;
+      }
+
+      .master-toolbar {
+        padding: 0.6rem;
+        gap: 0.5rem;
+      }
+
+      .search-box-wrap {
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .hotkey-chip {
+        display: none;
+      }
+
+      .toolbar-input {
+        height: 2.5rem;
+        padding-left: 2.25rem;
+        padding-right: 2.25rem;
+        font-size: 0.8125rem;
+      }
+
+      .search-icon {
+        left: 0.65rem;
+        font-size: 18px;
+      }
+
+      .clear-btn {
+        right: 0.5rem;
+      }
+
+      .category-tabs-scroll {
+        padding-bottom: 0.2rem;
+        gap: 0.25rem;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .category-tabs-scroll::-webkit-scrollbar {
+        display: none;
+      }
+
+      .cat-tab {
+        padding: 0.35rem 0.65rem;
+        font-size: 0.775rem;
+        flex-shrink: 0;
+      }
+
+      .actions-cluster {
+        width: 100%;
+        align-self: stretch;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.4rem;
+      }
+
+      .view-switch-box {
+        flex-shrink: 0;
+      }
+
+      .actions-cluster .btn {
+        flex: 1;
+        height: 2.35rem;
+        padding: 0.35rem 0.5rem;
+        font-size: 0.775rem;
+        justify-content: center;
+      }
+
+      .actions-cluster .btn-text {
+        font-size: 0.75rem;
+      }
+
+      .equipment-grid {
+        gap: 0.85rem;
+      }
+
+      .card-inner {
+        padding: 0.85rem;
+        gap: 0.65rem;
+      }
+
+      .asset-model-name {
+        font-size: 1rem;
+        line-height: 1.35;
+      }
+
+      .specs-well {
+        padding: 0.5rem 0.65rem;
+        gap: 0.25rem;
+      }
+
+      .specs-well-content {
+        font-size: 0.725rem;
+      }
+
+      .obs-row {
+        font-size: 0.725rem;
+      }
+
+      .identifiers-cluster {
+        gap: 0.25rem;
+      }
+
+      .id-chip {
+        padding: 0.2rem 0.45rem;
+        font-size: 0.65rem;
+      }
+
+      .card-footer-actions {
+        padding-top: 0.35rem;
+        gap: 0.35rem;
+      }
+
+      .card-footer-actions .btn {
+        padding: 0.4rem 0.5rem;
+        font-size: 0.75rem;
+      }
+
+      .table-container {
+        padding: 0.5rem;
+      }
+
+      .dense-table {
+        min-width: 640px;
+      }
+    }
   `]
 })
 export class InventoryListComponent implements OnInit {

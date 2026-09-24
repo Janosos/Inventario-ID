@@ -191,6 +191,36 @@ import { ToastService } from '../../core/services/toast.service';
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    @media (max-width: 640px) {
+      .modal-backdrop {
+        padding: 0.75rem;
+      }
+
+      .modal-card {
+        max-width: 100%;
+      }
+
+      .modal-header {
+        padding: 1rem 1.25rem;
+      }
+
+      .modal-body {
+        padding: 1.25rem;
+      }
+
+      .modal-footer {
+        padding: 0.85rem 1.25rem;
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+        align-items: stretch;
+      }
+
+      .modal-footer .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   `]
 })
 export class AuthModalComponent {

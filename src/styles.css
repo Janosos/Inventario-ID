@@ -126,6 +126,7 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
   overscroll-behavior: none;
+  overflow-x: hidden;
 }
 
 /* Material Symbols alignment */

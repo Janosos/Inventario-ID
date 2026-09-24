@@ -395,9 +395,42 @@ import { ToastService } from '../../core/services/toast.service';
       to { transform: rotate(360deg); }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 640px) {
+      .modal-backdrop {
+        padding: 0;
+        align-items: flex-end;
+      }
+
+      .modal-card {
+        max-height: 94vh;
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      }
+
+      .modal-header {
+        padding: 1rem 1.25rem;
+      }
+
+      .modal-body {
+        padding: 1.15rem 1.25rem;
+        gap: 1.15rem;
+      }
+
       .form-grid {
         grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .create-user-box {
+        padding: 1rem;
+      }
+
+      .modal-footer {
+        padding: 0.75rem 1.25rem;
+      }
+
+      .modal-footer .btn {
+        width: 100%;
+        justify-content: center;
       }
     }
   `]

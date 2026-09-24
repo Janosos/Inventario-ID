@@ -321,6 +321,63 @@ import { ThemeService } from '../../core/services/theme.service';
         display: none;
       }
     }
+
+    @media (max-width: 640px) {
+      .navbar-inner {
+        padding: 0 0.65rem;
+        gap: 0.35rem;
+      }
+
+      .brand-cluster {
+        gap: 0.45rem;
+      }
+
+      .brand-box {
+        gap: 0.5rem;
+      }
+
+      .brand-chip-icon {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .brand-chip-icon .material-symbols-outlined {
+        font-size: 19px;
+      }
+
+      .brand-title {
+        font-size: 1rem;
+      }
+
+      .brand-subtitle {
+        display: none;
+      }
+
+      .version-tag {
+        font-size: 0.6rem;
+        padding: 0.05rem 0.25rem;
+      }
+
+      .actions-cluster {
+        gap: 0.35rem;
+      }
+
+      .btn-text-desktop {
+        display: none;
+      }
+
+      .admin-btn {
+        padding: 0.35rem;
+        width: 2.1rem;
+        height: 2.1rem;
+        justify-content: center;
+      }
+
+      .user-profile-cluster {
+        padding-left: 0.15rem;
+        gap: 0.35rem;
+      }
+    }
   `]
 })
 export class NavbarComponent {
