@@ -33,13 +33,6 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
               <span class="material-symbols-outlined text-primary">devices_other</span>
             </div>
           </div>
-          <!-- Inline Sparkline Activity -->
-          <div class="sparkline-row">
-            <div class="sparkline-track">
-              <div class="sparkline-fill bg-primary" [style.width]="(stats().totalUnits > 0 ? '78%' : '0%')"></div>
-            </div>
-            <span class="sparkline-label">78% cap</span>
-          </div>
         </div>
 
         <!-- KPI Card 2: Laptops / Portatiles -->
@@ -52,18 +45,11 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
                 <span class="telemetry-metric">{{ stats().laptops }}</span>
                 <span class="telemetry-unit">unidades</span>
               </div>
-              <span class="telemetry-sub">Dell Latitude E5440</span>
+              <span class="telemetry-sub">Equipos portátiles</span>
             </div>
             <div class="telemetry-icon-box box-indigo">
               <span class="material-symbols-outlined text-primary">laptop_mac</span>
             </div>
-          </div>
-          <div class="telemetry-card-footer">
-            <div class="status-indicator">
-              <span class="dot-online"></span>
-              <span class="status-indicator-text text-secondary">100% Disponibles</span>
-            </div>
-            <span class="telemetry-sub-meta">0 Asignadas</span>
           </div>
         </div>
 
@@ -77,15 +63,11 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
                 <span class="telemetry-metric">{{ stats().monitors }}</span>
                 <span class="telemetry-unit">unidades</span>
               </div>
-              <span class="telemetry-sub">Dell P2210t & P2211ht</span>
+              <span class="telemetry-sub">Pantallas y displays</span>
             </div>
             <div class="telemetry-icon-box box-amber">
               <span class="material-symbols-outlined text-tertiary">monitor</span>
             </div>
-          </div>
-          <div class="telemetry-card-footer">
-            <span class="telemetry-tag-sub">Lotes A-1 & A-3</span>
-            <span class="badge-mini bg-primary-10 text-primary">2 Lotes</span>
           </div>
         </div>
 
@@ -104,13 +86,6 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
             <div class="telemetry-icon-box box-emerald">
               <span class="material-symbols-outlined text-secondary">task_alt</span>
             </div>
-          </div>
-          <div class="telemetry-card-footer">
-            <div class="status-indicator">
-              <span class="beacon-pulse"></span>
-              <span class="status-indicator-text text-primary-strong">Taller: {{ stats().maintenance }} unidades</span>
-            </div>
-            <span class="telemetry-sub-meta">Val: $8,450 USD</span>
           </div>
         </div>
       </section>
@@ -638,95 +613,6 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
     .box-amber { box-shadow: 0 0 16px rgba(255, 185, 95, 0.15); }
     .box-emerald { box-shadow: 0 0 16px rgba(78, 222, 163, 0.25); }
 
-    .sparkline-row {
-      margin-top: 1rem;
-      padding-top: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      height: 1.75rem;
-    }
-
-    .sparkline-track {
-      width: 100%;
-      background-color: var(--surface-high);
-      border-radius: var(--radius-full);
-      height: 0.375rem;
-      overflow: hidden;
-    }
-
-    .sparkline-fill {
-      height: 100%;
-      border-radius: var(--radius-full);
-      transition: width 1s ease-in-out;
-    }
-
-    .sparkline-label {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      color: var(--text-outline);
-      white-space: nowrap;
-    }
-
-    .telemetry-card-footer {
-      margin-top: 1rem;
-      padding-top: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .status-indicator {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .dot-online {
-      width: 0.5rem;
-      height: 0.5rem;
-      border-radius: 9999px;
-      background-color: var(--secondary);
-    }
-
-    .beacon-pulse {
-      position: relative;
-      display: inline-flex;
-      width: 0.5rem;
-      height: 0.5rem;
-      border-radius: 9999px;
-      background-color: var(--secondary);
-    }
-
-    .status-indicator-text {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      font-weight: 600;
-    }
-
-    .telemetry-sub-meta {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      color: var(--text-outline);
-    }
-
-    .telemetry-tag-sub {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      color: var(--text-secondary);
-    }
-
-    .badge-mini {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      padding: 0.125rem 0.375rem;
-      border-radius: var(--radius-sm);
-    }
-
-    .bg-primary-10 {
-      background-color: rgba(137, 206, 255, 0.12);
-    }
 
     /* MASTER TOOLBAR */
     .master-toolbar {
