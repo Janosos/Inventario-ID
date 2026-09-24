@@ -1,110 +1,143 @@
-# 💻 Inventario-ID | Control de Equipo de Cómputo
+# 💻 Inventario-ID | Control & Gestión IT Empresarial
 
-Aplicación web moderna y reactiva construida en **Angular 19+**, integrada con **Supabase** (Auth, Postgres RLS y Storage para fotos <10MB), diseñada bajo los principios de artesanía de diseño de **[Emil Kowalski](https://github.com/emilkowalski/skills)** y la fluidez de interacción de **Apple Design**.
+Sistema web integral, moderno y reactivo para el control, auditoría y seguimiento de activos tecnológicos empresariales (Laptops, Monitores, Desktops, Accesorios y Servidores). 
 
-Diseñada para ser alojada de forma estática en **GitHub Pages**.
+Desarrollado en **Angular** con arquitectura de componentes autónomos (*Standalone Components*), **Signals** reactivos, backend sin servidor en **Supabase** (PostgreSQL con Row Level Security, Auth y Storage), y exportación ejecutiva a **Microsoft Excel (.xlsx)** con fotografías incrustadas.
+
+---
+
+## 👤 Autor & Desarrollador
+
+- **Autor:** **Janosos (Ezequiel López)**
+- **GitHub:** [@Janosos](https://github.com/Janosos)
+- **Contacto:** `ezequiel_lopez@unikino.edu.mx`
+- **Repositorio:** [https://github.com/Janosos/Inventario-ID](https://github.com/Janosos/Inventario-ID)
 
 ---
 
 ## ✨ Características Principales
 
-- 🛡️ **Control de Roles (Admin / Normal)**:
-  - **Administrador**: Poder absoluto para crear, editar, eliminar equipos, gestionar fotografías y controlar el inventario.
-  - **Usuario Normal**: Acceso de consulta, búsqueda avanzada por Service Tag (ST) y etiquetas, filtrado por categorías y visualización de fotos.
-  - **Selector de Rol en Vivo**: Permite probar la experiencia de ambos roles con un solo clic.
-- 📸 **Gestión de Fotografías con Límite de 10 MB**:
-  - Drag & Drop intuitivo y selector de archivos.
-  - Validación estricta tanto en cliente como en base de datos de tamaño máximo de **10 MB** (`10,485,760 bytes`).
-  - Almacenamiento optimizado en el bucket `inventory-photos` de Supabase Storage.
-  - Galería interactiva y visor Lightbox a pantalla completa.
-- 🎨 **Diseño Artesanal (Craft UI) inspirado en Emil Kowalski**:
-  - Curvas de aceleración personalizadas: `--ease-out: cubic-bezier(0.23, 1, 0.32, 1)`.
-  - Micro-interacciones táctiles en botones con retroalimentación instantánea (`transform: scale(0.97)` en `:active`).
-  - Transiciones UI fluidas y deliberadas por debajo de 300 ms.
-  - Modales con origen espacial real (sin transiciones desde `scale(0)`).
-  - Notificaciones elegantes estilo **Sonner** con apilamiento y animación de entrada/salida.
-  - Modo Oscuro / Claro profundo con persistencia y efecto de vidrio (*Glassmorphism*).
-- 🏷️ **Campos Especializados para Equipo de Cómputo**:
-  - **Service Tag (ST)** con botón de copiado rápido al portapapeles en un toque.
-  - **Etiqueta Gorilla** para control interno de inventario.
-  - **Especificaciones Técnicas** (Procesador, RAM, Disco, Pantalla).
-  - **Observaciones y Accesorios** (Cargadores, cables, detalles estéticos).
-  - **Cantidad en Lote** (ideal para partidas como monitores o periféricos).
-- 📊 **Métricas en Tiempo Real & Exportación**:
-  - Contadores automáticos de unidades totales, laptops, monitores y estado de disponibilidad.
-  - Exportación con un clic a **CSV**.
+### 🔐 1. Autenticación y Control de Acceso TI
+- **Pantalla de Inicio de Sesión Obligatoria:** Ningún usuario puede ver el inventario ni la información del sistema sin antes autenticarse con correo y contraseña.
+- **Acceso Unificado a Datos:** Tanto los usuarios con rol **Normal** como los **Administradores** visualizan en tiempo real el inventario completo sincronizado desde Supabase.
+- **Persistencia Segura de Sesión:** Detección y restauración automática de sesiones previas sin parpadeos visuales (*Splash Screen* de verificación).
+- **Protección de Trabajo:** Las reglas de base de datos aseguran que los activos y fotos se mantengan persistentes de manera global.
+
+### 🛡️ 2. Jerarquía de Roles
+- **Administrador:**
+  - Registro, edición y eliminación de equipos.
+  - Subida, gestión y eliminación de fotografías de alta definición (<10 MB).
+  - Gestión completa de usuarios: invitar nuevos miembros, alternar roles entre Admin y Normal, y **eliminar permanentemente cuentas de usuario** del sistema con confirmación de seguridad y protección contra auto-eliminación.
+  - Generación y exportación de reportes ejecutivos en Excel (.xlsx).
+- **Usuario Normal:**
+  - Modo consulta seguro y optimizado.
+  - Búsqueda en vivo por Service Tag (ST), Gorilla Tag, marca, modelo y especificaciones.
+  - Filtrado interactivo por categorías.
+  - Visualización de especificaciones detalladas y fotografías en alta resolución.
+  - Restricción estricta de modificación, eliminación o exportación de datos.
+
+### 📊 3. Exportación Ejecutiva en Excel (.xlsx) con Fotografías
+- **Hojas de Cálculo Nativas (.xlsx):** Generación cliente mediante `exceljs` sin advertencias de formato.
+- **Fotografías Incrustadas en Cada Celda:** Cada equipo con foto incluye su miniatura optimizada directamente en la columna `FOTO`, con altura de fila ajustada (54 pt).
+- **Enlace Interactivo HD:** Columna con enlace directo (`Ver Foto HD`) para abrir la imagen original en alta resolución en el navegador.
+- **Diseño Corporativo:**
+  - Banner ejecutivo azul marino (`#0F2A4A`) con metadatos de emisión (fecha, hora, nombre del administrador emisor y total de activos).
+  - Cabeceras estilizadas con bordes de contraste y **filtros automáticos desplegables**.
+  - Filas alternadas estilo cebra (`#FFFFFF` / `#F8FAFC`).
+  - **Insignias de Estado con código de color:** Disponible (verde), En uso (azul), Para piezas (ámbar/dorado), Baja (rojo vino) y Mantenimiento (naranja).
+  - Inmovilización de paneles para mantener visible la cabecera durante el scroll.
+
+### 💻 4. Control Integral de Equipos
+- **Service Tag (ST):** Identificador de fabricante con botón de copiado rápido al portapapeles.
+- **Gorilla Tag:** Código de control interno de inventario.
+- **Especificaciones Técnicas:** Procesador, memoria RAM, almacenamiento y pantalla.
+- **Observaciones & Periféricos:** Control de cargadores, cables, accesorios y detalles de condición.
+- **Estados Operativos:** `Disponible`, `En uso`, `Para piezas`, `Mantenimiento` y `Baja`.
+- **Cantidades por Lote:** Soporte para partidas múltiples (ej. monitores en stock).
+
+### 📱 5. Diseño Artesanal y Adaptabilidad Móvil
+- **Diseño UI/UX de Alta Gama:** Inspirado en las directrices de Emil Kowalski y Apple Human Interface, con modo Oscuro profundo y Modo Claro.
+- **Totalmente Responsivo:** Diseñado desde pantallas móviles hasta monitores de escritorio ultrawide.
+- **Transiciones y Notificaciones:** Sistema de alertas tipo *Sonner* con micro-animaciones fluidas.
 
 ---
 
-## 📦 Equipos Registrados Inicialmente (Datos Semilla)
+## 🔒 Seguridad en Repositorio Público
 
-1. **Dell Latitude E5440**
-   - **Service Tag (ST)**: `1T0KP12`
-   - **Etiqueta Gorilla**: `1904`
-   - **Especificaciones**: `i5 4ta 8gb 120 HDD`
-   - **Observaciones**: Cuenta con cargador
-   - **Cantidad**: 1
+Este repositorio es de acceso público. Por seguridad, **los archivos de entorno con credenciales activas están ignorados por `.gitignore`**:
+- `src/environments/environment.ts`
+- `src/environments/environment.prod.ts`
+- Archivos `.env` y credenciales locales
 
-2. **Dell Latitude E5440**
-   - **Service Tag (ST)**: `7CJZN32`
-   - **Etiqueta Gorilla**: `2376`
-   - **Especificaciones**: `i5 4ta 8gb 128 HDD`
-   - **Observaciones**: Cuenta con cargador. Requiere/tiene foto.
-   - **Cantidad**: 1
-
-3. **Monitores Dell P2210t**
-   - **Especificaciones**: Monitor Profesional 22" (DVI, VGA, DisplayPort)
-   - **Observaciones**: 11 en total contando este
-   - **Cantidad**: 11 unidades
-
-4. **Monitores Dell P2211ht**
-   - **Especificaciones**: Monitor LED Full HD 21.5" (DVI-D, VGA)
-   - **Observaciones**: 2 en total
-   - **Cantidad**: 2 unidades
+Se provee la plantilla [`src/environments/environment.example.ts`](src/environments/environment.example.ts) como referencia para configurar cualquier entorno nuevo.
 
 ---
 
-## 🚀 Configuración de Supabase
+## 🚀 Despliegue en GitHub Pages con GitHub Actions
 
-El script SQL completo se encuentra en [`supabase/schema.sql`](supabase/schema.sql).
+El flujo automatizado se encuentra en [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). Para desplegar tu versión a GitHub Pages:
 
-### Pasos:
-1. Abre tu proyecto **Inventario-ID** en [Supabase Dashboard](https://supabase.com/dashboard).
-2. Dirígete a **SQL Editor** y presiona **New Query**.
-3. Copia y pega el contenido de `supabase/schema.sql` y ejecútalo (**Run**).
-4. El script configurará automáticamente:
-   - Tabla de perfiles `public.profiles` y función de verificación `is_admin()`.
-   - Asignación de rol `admin` al primer usuario registrado.
-   - Tabla `public.inventory_items` e `inventory_item_photos`.
-   - Bucket público `inventory-photos` con límite estricto de **10 MB** por archivo.
-   - Políticas RLS (Row Level Security) para proteger inserciones, modificaciones y borrados.
-   - Los datos semilla iniciales de los equipos listados arriba.
-5. Obtén tu **Project URL** y **Anon Key** desde **Project Settings -> API** y colócalas en la interfaz web (botón *Configurar Supabase*) o en `src/environments/environment.ts`.
+1. Ve a tu repositorio en GitHub: `https://github.com/Janosos/Inventario-ID`.
+2. Dirígete a **Settings** > **Secrets and variables** > **Actions**.
+3. Añade los siguientes **Repository Secrets**:
+   - `SUPABASE_URL`: Tu URL de proyecto Supabase (ej. `https://xxxx.supabase.co`).
+   - `SUPABASE_ANON_KEY`: Tu clave anónima pública de Supabase.
+4. En **Settings** > **Pages**, asegúrate de que la fuente esté configurada como **GitHub Actions**.
+5. Al hacer `git push origin main`, el flujo inyectará de forma segura las variables, compilará la aplicación y la publicará en GitHub Pages.
 
 ---
 
-## 🛠️ Desarrollo Local
+## 🛠️ Configuración de la Base de Datos (Supabase)
 
-```bash
-# Instalar dependencias
-npm install
+El script SQL completo y documentado se encuentra en [`supabase/schema.sql`](supabase/schema.sql).
 
-# Iniciar servidor de desarrollo
-npm start
-```
-
-Abre [http://localhost:4200](http://localhost:4200) en tu navegador.
+### Pasos de Configuración:
+1. Crea un proyecto en [Supabase](https://supabase.com).
+2. Dirígete a **SQL Editor** y ejecuta todo el script [`supabase/schema.sql`](supabase/schema.sql).
+3. El script creará automáticamente:
+   - Tabla `public.profiles` con roles `admin` y `normal`.
+   - Función `delete_user_by_admin(UUID)` para eliminación segura de usuarios desde la app.
+   - Tabla `public.inventory_items` con soporte de estados (incluyendo `para_piezas`).
+   - Tabla `public.inventory_item_photos` y el bucket de almacenamiento público `inventory-photos` (límite de 10 MB por foto).
+   - Políticas RLS (Row Level Security) que permiten lectura a todos los usuarios autenticados y escritura/baja exclusiva a Administradores.
+   - Datos semilla iniciales de equipos.
 
 ---
 
-## 🌐 Despliegue en GitHub Pages
+## 💻 Ejecución en Desarrollo Local
 
-La aplicación está lista para desplegarse mediante GitHub Actions:
-- La ruta del enrutador usa `withHashLocation()` para evitar errores 404 en recargas de GitHub Pages.
-- El archivo `.github/workflows/deploy.yml` compilará y publicará automáticamente tu proyecto cada vez que hagas `git push` a `main`.
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/Janosos/Inventario-ID.git
+   cd Inventario-ID
+   ```
 
-Para compilar manualmente:
-```bash
-npm run build:gh
-```
-El resultado se generará en `dist/inventario-app/browser`.
+2. **Instalar dependencias:**
+   ```bash
+   npm install
+   ```
+
+3. **Configurar credenciales locales:**
+   Copia el archivo de plantilla a tu entorno:
+   ```bash
+   cp src/environments/environment.example.ts src/environments/environment.ts
+   cp src/environments/environment.example.ts src/environments/environment.prod.ts
+   ```
+   Abre `src/environments/environment.ts` y coloca tus claves de Supabase.
+
+4. **Iniciar servidor de desarrollo:**
+   ```bash
+   npm start
+   ```
+   Abre [http://localhost:4200](http://localhost:4200) en tu navegador.
+
+5. **Compilar para producción:**
+   ```bash
+   npm run build:gh
+   ```
+
+---
+
+## 📄 Licencia
+
+Este proyecto fue desarrollado por **Janosos (Ezequiel López)** para la gestión y control corporativo de activos de tecnologías de la información.
