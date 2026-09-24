@@ -5,10 +5,39 @@ import { InventoryItem, ItemPhoto, UserProfile, UserRole } from '../models/inven
 
 const STORAGE_KEY_ITEMS = 'inventario_local_items_v1';
 
-// Datos iniciales solicitados por el usuario
+export const SEED_UUID_MAP: Record<string, string> = {
+  'seed-item-1': 'e5440001-0000-4000-8000-000000000001',
+  'seed-item-2': 'e5440002-0000-4000-8000-000000000002',
+  'seed-item-3': 'd2210003-0000-4000-8000-000000000003',
+  'seed-item-4': 'd2211004-0000-4000-8000-000000000004'
+};
+
+export function isValidUUID(uuid: string | null | undefined): boolean {
+  if (!uuid || typeof uuid !== 'string') return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
+}
+
+export function generateUUID(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+export function ensureValidUUID(id: string): string {
+  if (isValidUUID(id)) return id;
+  if (SEED_UUID_MAP[id]) return SEED_UUID_MAP[id];
+  return generateUUID();
+}
+
+// Datos iniciales con identificadores UUID válidos para compatibilidad con PostgreSQL/Supabase
 export const INITIAL_SEED_ITEMS: InventoryItem[] = [
   {
-    id: 'seed-item-1',
+    id: 'e5440001-0000-4000-8000-000000000001',
     name: 'Dell Latitude E5440',
     category: 'Laptop',
     brand: 'Dell',
@@ -26,7 +55,7 @@ export const INITIAL_SEED_ITEMS: InventoryItem[] = [
     photos: []
   },
   {
-    id: 'seed-item-2',
+    id: 'e5440002-0000-4000-8000-000000000002',
     name: 'Dell Latitude E5440',
     category: 'Laptop',
     brand: 'Dell',
@@ -44,7 +73,7 @@ export const INITIAL_SEED_ITEMS: InventoryItem[] = [
     photos: []
   },
   {
-    id: 'seed-item-3',
+    id: 'd2210003-0000-4000-8000-000000000003',
     name: 'Monitores Dell P2210t',
     category: 'Monitor',
     brand: 'Dell',
@@ -62,7 +91,7 @@ export const INITIAL_SEED_ITEMS: InventoryItem[] = [
     photos: []
   },
   {
-    id: 'seed-item-4',
+    id: 'd2211004-0000-4000-8000-000000000004',
     name: 'Monitores Dell P2211ht',
     category: 'Monitor',
     brand: 'Dell',
@@ -354,6 +383,14 @@ export class SupabaseService {
   // GESTIÓN DEL INVENTARIO (CRUD)
   // ==========================================
 
+  ensureValidUUID(id: string): string {
+    return ensureValidUUID(id);
+  }
+
+  generateUUID(): string {
+    return generateUUID();
+  }
+
   async getInventory(): Promise<InventoryItem[]> {
     if (!this.client) {
       return this.getLocalItems();
@@ -392,7 +429,7 @@ export class SupabaseService {
     if (!this.client) {
       const newItem: InventoryItem = {
         ...item,
-        id: 'local-' + Date.now(),
+        id: generateUUID(),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         photos: []
@@ -425,26 +462,77 @@ export class SupabaseService {
       return { error: new Error('Permiso denegado: solo administradores pueden modificar equipos.') };
     }
 
+    const validId = ensureValidUUID(id);
+
+    // 1. Siempre actualizar en respaldo local
+    const items = this.getLocalItems();
+    const idx = items.findIndex(i => i.id === id || i.id === validId);
+    let fullItem: InventoryItem | null = null;
+    if (idx !== -1) {
+      items[idx] = { 
+        ...items[idx], 
+        ...updates, 
+        id: validId, 
+        updated_at: new Date().toISOString() 
+      };
+      fullItem = items[idx];
+      this.saveLocalItems(items);
+    }
+
     if (!this.client) {
-      const items = this.getLocalItems();
-      const idx = items.findIndex(i => i.id === id);
-      if (idx !== -1) {
-        items[idx] = { ...items[idx], ...updates, updated_at: new Date().toISOString() };
-        this.saveLocalItems(items);
-      }
       return { error: null };
     }
 
     try {
-      const { error } = await this.client
-        .from('inventory_items')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', id);
+      // 2. Limpiar carga útil para evitar conflictos con columnas relacionales o protegidas
+      const cleanPayload: any = { ...updates };
+      delete cleanPayload.id;
+      delete cleanPayload.photos;
+      delete cleanPayload.created_at;
+      cleanPayload.updated_at = new Date().toISOString();
 
-      if (error) throw error;
+      const { data, error } = await this.client
+        .from('inventory_items')
+        .update(cleanPayload)
+        .eq('id', validId)
+        .select();
+
+      if (error) {
+        console.error('Error al actualizar en Supabase:', error);
+        throw error;
+      }
+
+      // Si no afectó ninguna fila (por ejemplo, el ítem fue generado localmente y no existe aún en Supabase)
+      if (!data || data.length === 0) {
+        const itemToInsert = fullItem || (updates as any);
+        const insertPayload: any = {
+          id: validId,
+          name: itemToInsert.name || 'Equipo',
+          category: itemToInsert.category || 'Laptop',
+          brand: itemToInsert.brand || 'Dell',
+          model: itemToInsert.model || null,
+          service_tag: itemToInsert.service_tag || null,
+          gorilla_tag: itemToInsert.gorilla_tag || null,
+          specifications: itemToInsert.specifications || null,
+          observations: itemToInsert.observations || null,
+          quantity: itemToInsert.quantity ?? 1,
+          status: itemToInsert.status || 'disponible',
+          location: itemToInsert.location || 'Sistemas / Almacén',
+          assigned_to: itemToInsert.assigned_to || null,
+          main_photo_url: itemToInsert.main_photo_url || null,
+          created_by: this.currentUser()?.id || null,
+          updated_at: new Date().toISOString()
+        };
+
+        const { error: insertErr } = await this.client
+          .from('inventory_items')
+          .insert(insertPayload);
+
+        if (insertErr) {
+          console.warn('Advertencia al insertar ítem de respaldo en Supabase:', insertErr);
+        }
+      }
+
       return { error: null };
     } catch (err: any) {
       return { error: err };
@@ -456,9 +544,12 @@ export class SupabaseService {
       return { error: new Error('Permiso denegado: solo administradores pueden eliminar equipos.') };
     }
 
+    const validId = ensureValidUUID(id);
+
+    const items = this.getLocalItems().filter(i => i.id !== id && i.id !== validId);
+    this.saveLocalItems(items);
+
     if (!this.client) {
-      const items = this.getLocalItems().filter(i => i.id !== id);
-      this.saveLocalItems(items);
       return { error: null };
     }
 
@@ -466,7 +557,7 @@ export class SupabaseService {
       const { error } = await this.client
         .from('inventory_items')
         .delete()
-        .eq('id', id);
+        .eq('id', validId);
 
       if (error) throw error;
       return { error: null };
@@ -483,6 +574,8 @@ export class SupabaseService {
     if (!this.isAdmin()) {
       return { photo: null, error: new Error('Permiso denegado: solo administradores pueden subir fotos.') };
     }
+
+    const validId = ensureValidUUID(itemId);
 
     // Validación estricta de 10 MB
     const MAX_SIZE = environment.maxPhotoSizeBytes; // 10 * 1024 * 1024
@@ -507,9 +600,9 @@ export class SupabaseService {
         reader.onload = () => {
           const base64Url = reader.result as string;
           const newPhoto: ItemPhoto = {
-            id: 'photo-' + Date.now(),
-            item_id: itemId,
-            storage_path: `local/${itemId}/${file.name}`,
+            id: generateUUID(),
+            item_id: validId,
+            storage_path: `local/${validId}/${file.name}`,
             public_url: base64Url,
             file_name: file.name,
             file_size: file.size,
@@ -517,7 +610,7 @@ export class SupabaseService {
           };
 
           const items = this.getLocalItems();
-          const target = items.find(i => i.id === itemId);
+          const target = items.find(i => i.id === itemId || i.id === validId);
           if (target) {
             target.photos = target.photos || [];
             target.photos.push(newPhoto);
@@ -539,7 +632,7 @@ export class SupabaseService {
     // Subida a Supabase Storage
     try {
       const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const storagePath = `items/${itemId}/${Date.now()}_${sanitizedName}`;
+      const storagePath = `items/${validId}/${Date.now()}_${sanitizedName}`;
 
       const { error: uploadError } = await this.client.storage
         .from(environment.storageBucket)
@@ -560,7 +653,7 @@ export class SupabaseService {
       const { data: photoData, error: dbError } = await this.client
         .from('inventory_item_photos')
         .insert({
-          item_id: itemId,
+          item_id: validId,
           storage_path: storagePath,
           public_url: publicUrl,
           file_name: file.name,
@@ -575,7 +668,7 @@ export class SupabaseService {
       await this.client
         .from('inventory_items')
         .update({ main_photo_url: publicUrl })
-        .eq('id', itemId)
+        .eq('id', validId)
         .is('main_photo_url', null);
 
       return { photo: photoData as ItemPhoto, error: null };
@@ -627,8 +720,30 @@ export class SupabaseService {
       return [...INITIAL_SEED_ITEMS];
     }
     try {
-      return JSON.parse(raw);
+      const items: InventoryItem[] = JSON.parse(raw);
+      let modified = false;
+      const sanitized = items.map(item => {
+        const validId = ensureValidUUID(item.id);
+        if (validId !== item.id) {
+          modified = true;
+          return {
+            ...item,
+            id: validId,
+            photos: (item.photos || []).map(p => ({
+              ...p,
+              id: ensureValidUUID(p.id),
+              item_id: validId
+            }))
+          };
+        }
+        return item;
+      });
+      if (modified) {
+        this.saveLocalItems(sanitized);
+      }
+      return sanitized;
     } catch {
+      this.saveLocalItems(INITIAL_SEED_ITEMS);
       return [...INITIAL_SEED_ITEMS];
     }
   }

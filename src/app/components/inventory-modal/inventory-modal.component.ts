@@ -428,12 +428,13 @@ export class InventoryModalComponent implements OnInit {
       };
 
       if (this.isEdit && this.itemToEdit) {
-        const { error } = await this.supabase.updateItem(this.itemToEdit.id, cleanData);
+        const validId = this.supabase.ensureValidUUID(this.itemToEdit.id);
+        const { error } = await this.supabase.updateItem(validId, cleanData);
         if (error) {
           this.toast.error('Error al actualizar', error.message);
         } else {
           this.toast.success('Equipo actualizado', `"${cleanData.name}" se actualizó correctamente.`);
-          this.saved.emit({ ...this.itemToEdit, ...cleanData });
+          this.saved.emit({ ...this.itemToEdit, ...cleanData, id: validId });
           this.close.emit();
         }
       } else {

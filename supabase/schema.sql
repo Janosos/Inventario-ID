@@ -252,6 +252,7 @@ CREATE POLICY "Solo admin puede modificar o borrar fotos del bucket"
 
 -- 9. DATOS SEMILLA (INSERCIÓN DE LOS EQUIPOS PROPORCIONADOS POR EL USUARIO)
 INSERT INTO public.inventory_items (
+    id,
     name,
     category,
     brand,
@@ -264,6 +265,7 @@ INSERT INTO public.inventory_items (
     status
 ) VALUES
 (
+    'e5440001-0000-4000-8000-000000000001',
     'Dell Latitude E5440',
     'Laptop',
     'Dell',
@@ -276,6 +278,7 @@ INSERT INTO public.inventory_items (
     'disponible'
 ),
 (
+    'e5440002-0000-4000-8000-000000000002',
     'Dell Latitude E5440',
     'Laptop',
     'Dell',
@@ -288,6 +291,7 @@ INSERT INTO public.inventory_items (
     'disponible'
 ),
 (
+    'd2210003-0000-4000-8000-000000000003',
     'Monitores Dell P2210t',
     'Monitor',
     'Dell',
@@ -300,6 +304,7 @@ INSERT INTO public.inventory_items (
     'disponible'
 ),
 (
+    'd2211004-0000-4000-8000-000000000004',
     'Monitores Dell P2211ht',
     'Monitor',
     'Dell',
@@ -311,7 +316,7 @@ INSERT INTO public.inventory_items (
     2,
     'disponible'
 )
-ON CONFLICT DO NOTHING;
+ON CONFLICT (id) DO NOTHING;
 
 -- ====================================================================================
 -- NOTA IMPORTANTE PARA GESTIONAR ROLES MANUALMENTE:
