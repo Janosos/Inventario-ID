@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { InventoryItem, ItemCategory, ItemStatus, InventoryStats } from '../../core/models/inventory.model';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { ToastService } from '../../core/services/toast.service';
+import { ExcelExportService } from '../../core/services/excel-export.service';
 import { InventoryModalComponent } from '../inventory-modal/inventory-modal.component';
 import { PhotoManagerComponent } from '../photo-manager/photo-manager.component';
 
@@ -174,9 +175,19 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
 
           <!-- Export Action (Admin Only) -->
           @if (supabase.isAdmin()) {
-            <button type="button" class="btn btn-secondary btn-sm" (click)="exportToCSV()" title="Exportar inventario CSV">
-              <span class="material-symbols-outlined icon-18">file_download</span>
-              <span class="btn-text">Exportar CSV</span>
+            <button 
+              type="button" 
+              class="btn btn-secondary btn-sm" 
+              (click)="exportToExcel()" 
+              [disabled]="isExporting()"
+              title="Exportar reporte profesional en Excel (.xlsx) con fotos">
+              @if (isExporting()) {
+                <span class="spinner-sm"></span>
+                <span class="btn-text">Generando...</span>
+              } @else {
+                <span class="material-symbols-outlined icon-18">table_chart</span>
+                <span class="btn-text">Exportar Excel</span>
+              }
             </button>
           }
 
@@ -1496,9 +1507,11 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
 export class InventoryListComponent implements OnInit {
   readonly supabase = inject(SupabaseService);
   private readonly toast = inject(ToastService);
+  private readonly excelExport = inject(ExcelExportService);
 
   readonly items = signal<InventoryItem[]>([]);
   readonly loading = signal<boolean>(true);
+  readonly isExporting = signal<boolean>(false);
 
   searchQuery = '';
   readonly selectedCategory = signal<string>('Todos');
@@ -1693,7 +1706,7 @@ export class InventoryListComponent implements OnInit {
     }
   }
 
-  exportToCSV(): void {
+  async exportToExcel(): Promise<void> {
     if (!this.supabase.isAdmin()) {
       this.toast.error('Acceso denegado', 'Solo el Administrador tiene permisos para exportar información.');
       return;
@@ -1705,32 +1718,19 @@ export class InventoryListComponent implements OnInit {
       return;
     }
 
-    const headers = ['ID', 'Equipo', 'Categoria', 'Marca', 'Modelo', 'Service_Tag', 'Gorilla_Tag', 'Especificaciones', 'Observaciones', 'Cantidad', 'Estado', 'Ubicacion'];
-    const rows = data.map(item => [
-      `"${item.id}"`,
-      `"${(item.name || '').replace(/"/g, '""')}"`,
-      `"${item.category}"`,
-      `"${item.brand}"`,
-      `"${(item.model || '').replace(/"/g, '""')}"`,
-      `"${(item.service_tag || '').replace(/"/g, '""')}"`,
-      `"${(item.gorilla_tag || '').replace(/"/g, '""')}"`,
-      `"${(item.specifications || '').replace(/"/g, '""')}"`,
-      `"${(item.observations || '').replace(/"/g, '""')}"`,
-      item.quantity,
-      `"${item.status}"`,
-      `"${(item.location || '').replace(/"/g, '""')}"`
-    ]);
+    this.isExporting.set(true);
+    try {
+      const adminName = this.supabase.currentProfile()?.full_name || this.supabase.currentUser()?.email || 'Administrador TI';
+      await this.excelExport.exportToExcel(data, adminName);
+    } catch (err: any) {
+      this.toast.error('Error al exportar', err.message || 'No se pudo generar el reporte.');
+    } finally {
+      this.isExporting.set(false);
+    }
+  }
 
-    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `inventario-equipos-${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    this.toast.success('Reporte CSV generado', `Descarga iniciada: ${data.length} activos TI exportados.`);
+  // Mantenemos soporte de CSV secundario por compatibilidad
+  exportToCSV(): void {
+    this.exportToExcel();
   }
 }
