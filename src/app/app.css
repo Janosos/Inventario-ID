@@ -18,3 +18,48 @@
     width: calc(100% - 16rem);
   }
 }
+
+/* Splash screen while verifying session */
+.auth-splash-screen {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-app);
+}
+
+.splash-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  animation: modalEnter var(--duration-normal) var(--ease-out) forwards;
+}
+
+.splash-logo {
+  height: 4.5rem;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 16px rgba(137, 206, 255, 0.5));
+}
+
+.splash-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--border-subtle);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.splash-text {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

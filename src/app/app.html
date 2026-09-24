@@ -1,27 +1,42 @@
-<div class="app-root-layout">
-  <app-navbar 
-    (toggleSidebar)="sidebarOpen.set(!sidebarOpen())"
-    (openUsers)="showUserManagerModal.set(true)" 
-    (openAuth)="showAuthModal.set(true)">
-  </app-navbar>
+@if (!supabase.initialAuthChecked()) {
+  <!-- Pantalla de carga mientras se verifica la sesión en Supabase -->
+  <div class="auth-splash-screen">
+    <div class="splash-card">
+      <img src="logo.png" alt="Inventario-ID Logo" class="splash-logo" />
+      <div class="splash-spinner"></div>
+      <span class="splash-text">Verificando sesión segura...</span>
+    </div>
+  </div>
+} @else if (!supabase.currentUser()) {
+  <!-- Vista de inicio de sesión obligatoria antes de entrar a la app -->
+  <app-login-view></app-login-view>
+} @else {
+  <!-- Aplicación protegida para usuarios autenticados -->
+  <div class="app-root-layout">
+    <app-navbar 
+      (toggleSidebar)="sidebarOpen.set(!sidebarOpen())"
+      (openUsers)="showUserManagerModal.set(true)" 
+      (openAuth)="showAuthModal.set(true)">
+    </app-navbar>
 
-  <app-sidebar 
-    [isOpen]="sidebarOpen()"
-    (closeSidebar)="sidebarOpen.set(false)"
-    (tabSelected)="onTabSelected($event)">
-  </app-sidebar>
+    <app-sidebar 
+      [isOpen]="sidebarOpen()"
+      (closeSidebar)="sidebarOpen.set(false)"
+      (tabSelected)="onTabSelected($event)">
+    </app-sidebar>
 
-  <main class="main-content-layout">
-    <app-inventory-list></app-inventory-list>
-  </main>
+    <main class="main-content-layout">
+      <app-inventory-list></app-inventory-list>
+    </main>
 
-  <app-toast-container></app-toast-container>
+    @if (showAuthModal()) {
+      <app-auth-modal (close)="showAuthModal.set(false)"></app-auth-modal>
+    }
 
-  @if (showAuthModal()) {
-    <app-auth-modal (close)="showAuthModal.set(false)"></app-auth-modal>
-  }
+    @if (showUserManagerModal()) {
+      <app-user-manager-modal (close)="showUserManagerModal.set(false)"></app-user-manager-modal>
+    }
+  </div>
+}
 
-  @if (showUserManagerModal()) {
-    <app-user-manager-modal (close)="showUserManagerModal.set(false)"></app-user-manager-modal>
-  }
-</div>
+<app-toast-container></app-toast-container>

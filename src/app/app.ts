@@ -1,4 +1,4 @@
-import { Component, signal, HostListener } from '@angular/core';
+import { Component, signal, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
@@ -6,6 +6,8 @@ import { InventoryListComponent } from './components/inventory-list/inventory-li
 import { ToastContainerComponent } from './components/toast-container/toast-container.component';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { UserManagerModalComponent } from './components/user-manager-modal/user-manager-modal.component';
+import { LoginViewComponent } from './components/login-view/login-view.component';
+import { SupabaseService } from './core/services/supabase.service';
 
 @Component({
   selector: 'app-root',
@@ -17,12 +19,15 @@ import { UserManagerModalComponent } from './components/user-manager-modal/user-
     InventoryListComponent,
     ToastContainerComponent,
     AuthModalComponent,
-    UserManagerModalComponent
+    UserManagerModalComponent,
+    LoginViewComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
+  readonly supabase = inject(SupabaseService);
+
   readonly title = signal('Inventario-ID');
   readonly sidebarOpen = signal<boolean>(false);
   readonly showAuthModal = signal<boolean>(false);

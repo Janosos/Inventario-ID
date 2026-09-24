@@ -119,6 +119,7 @@ export class SupabaseService {
   readonly isConfigured = signal<boolean>(true);
   readonly currentUser = signal<User | null>(null);
   readonly currentProfile = signal<UserProfile | null>(null);
+  readonly initialAuthChecked = signal<boolean>(false);
   readonly loading = signal<boolean>(false);
 
   // Computado de si el usuario actual tiene rol de Administrador
@@ -161,13 +162,17 @@ export class SupabaseService {
           } else {
             this.currentProfile.set(null);
           }
+          this.initialAuthChecked.set(true);
         });
 
         // Verificar sesión actual existente
         this.checkInitialSession();
       } catch (err) {
         console.error('Error inicializando cliente Supabase:', err);
+        this.initialAuthChecked.set(true);
       }
+    } else {
+      this.initialAuthChecked.set(true);
     }
   }
 
@@ -176,7 +181,10 @@ export class SupabaseService {
   }
 
   private async checkInitialSession(): Promise<void> {
-    if (!this.client) return;
+    if (!this.client) {
+      this.initialAuthChecked.set(true);
+      return;
+    }
     try {
       const { data: { session } } = await this.client.auth.getSession();
       this.currentUser.set(session?.user ?? null);
@@ -185,6 +193,8 @@ export class SupabaseService {
       }
     } catch (e) {
       console.warn('No se pudo restaurar la sesión de Supabase:', e);
+    } finally {
+      this.initialAuthChecked.set(true);
     }
   }
 
