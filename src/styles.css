@@ -3,8 +3,6 @@
    Based on Emil Kowalski's Design Engineering & Apple Design Principles
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
 :root {
   /* Easing curves from Emil Kowalski's craft specifications */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
