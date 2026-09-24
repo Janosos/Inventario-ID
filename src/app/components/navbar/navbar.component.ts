@@ -16,17 +16,8 @@ import { ThemeService } from '../../core/services/theme.service';
             <span class="material-symbols-outlined">menu</span>
           </button>
 
-          <div class="brand-box">
-            <div class="brand-chip-icon">
-              <span class="material-symbols-outlined text-primary">memory</span>
-            </div>
-            <div class="brand-texts">
-              <div class="brand-title-row">
-                <span class="brand-title">Inventario-ID</span>
-                <span class="version-tag">v2.4</span>
-              </div>
-              <span class="brand-subtitle">Control & Gestión IT Empresarial</span>
-            </div>
+          <div class="brand-box" title="Inventario-ID">
+            <img src="logo.png" alt="Inventario-ID" class="brand-logo-img" />
           </div>
         </div>
 
@@ -150,60 +141,24 @@ import { ThemeService } from '../../core/services/theme.service';
     .brand-box {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      cursor: pointer;
     }
 
-    .brand-chip-icon {
-      width: 2.5rem;
+    .brand-logo-img {
       height: 2.5rem;
-      border-radius: var(--radius-md);
-      background-color: var(--surface-container);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow-glow-blue);
-      border: 1px solid var(--border-subtle);
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(137, 206, 255, 0.45));
+      transition: transform var(--duration-fast) var(--ease-out), filter var(--duration-fast) var(--ease-out);
     }
 
-    .brand-chip-icon .material-symbols-outlined {
-      font-size: 22px;
-      color: var(--primary);
+    .brand-logo-img:hover {
+      transform: scale(1.08);
+      filter: drop-shadow(0 0 16px rgba(137, 206, 255, 0.75));
     }
 
-    .brand-texts {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .brand-title-row {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-    }
-
-    .brand-title {
-      font-size: 1.125rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--text-primary);
-      line-height: 1.2;
-    }
-
-    .version-tag {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      font-weight: 600;
-      background: rgba(137, 206, 255, 0.12);
-      color: var(--primary);
-      padding: 0.1rem 0.35rem;
-      border-radius: var(--radius-sm);
-      text-transform: uppercase;
-    }
-
-    .brand-subtitle {
-      font-size: 0.725rem;
-      color: var(--text-muted);
-      line-height: 1.2;
+    :host-context(.light) .brand-logo-img {
+      filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6)) invert(1);
     }
 
     .role-center-cluster {
@@ -333,29 +288,11 @@ import { ThemeService } from '../../core/services/theme.service';
       }
 
       .brand-box {
-        gap: 0.5rem;
+        gap: 0.35rem;
       }
 
-      .brand-chip-icon {
-        width: 2.1rem;
-        height: 2.1rem;
-      }
-
-      .brand-chip-icon .material-symbols-outlined {
-        font-size: 19px;
-      }
-
-      .brand-title {
-        font-size: 1rem;
-      }
-
-      .brand-subtitle {
-        display: none;
-      }
-
-      .version-tag {
-        font-size: 0.6rem;
-        padding: 0.05rem 0.25rem;
+      .brand-logo-img {
+        height: 2.15rem;
       }
 
       .actions-cluster {
