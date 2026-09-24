@@ -1,0 +1,11 @@
+.app-root-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-app);
+}
+
+.main-content {
+  flex: 1;
+  padding-bottom: 3rem;
+}

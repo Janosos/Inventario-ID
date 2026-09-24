@@ -1,0 +1,20 @@
+<div class="app-root-layout">
+  <app-navbar 
+    (openConfig)="showConfigModal.set(true)" 
+    (openAuth)="showAuthModal.set(true)">
+  </app-navbar>
+
+  <main class="main-content">
+    <app-inventory-list></app-inventory-list>
+  </main>
+
+  <app-toast-container></app-toast-container>
+
+  @if (showConfigModal()) {
+    <app-config-modal (close)="showConfigModal.set(false)"></app-config-modal>
+  }
+
+  @if (showAuthModal()) {
+    <app-auth-modal (close)="showAuthModal.set(false)"></app-auth-modal>
+  }
+</div>
