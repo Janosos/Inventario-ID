@@ -389,6 +389,44 @@ export class SupabaseService {
     }
   }
 
+  /**
+   * Permite al Administrador eliminar permanentemente a un usuario del sistema.
+   * Intenta primero mediante la función RPC 'delete_user_by_admin' (que borra en auth.users y public.profiles).
+   * Si la función RPC no existe aún o falla, elimina directamente el registro de la tabla public.profiles.
+   */
+  async deleteUser(userId: string): Promise<{ error: Error | null }> {
+    if (!this.isAdmin()) {
+      return { error: new Error('Permiso denegado: solo administradores pueden eliminar usuarios.') };
+    }
+    if (userId === this.currentUser()?.id) {
+      return { error: new Error('No puedes eliminar tu propia cuenta mientras tienes la sesión activa.') };
+    }
+    if (!this.client) {
+      return { error: null };
+    }
+
+    try {
+      // 1. Intentar borrado completo a través de la función de base de datos
+      const { error: rpcError } = await this.client.rpc('delete_user_by_admin', { target_user_id: userId });
+      if (!rpcError) {
+        return { error: null };
+      }
+
+      // 2. Si no existe el RPC o falló, borrar de la tabla public.profiles
+      console.warn('RPC delete_user_by_admin no disponible o falló, borrando de profiles:', rpcError);
+      const { error: profileError } = await this.client
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (profileError) throw profileError;
+      return { error: null };
+    } catch (err: any) {
+      return { error: err };
+    }
+  }
+
+
   // ==========================================
   // GESTIÓN DEL INVENTARIO (CRUD)
   // ==========================================

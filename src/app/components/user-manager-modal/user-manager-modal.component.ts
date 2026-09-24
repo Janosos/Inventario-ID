@@ -150,14 +150,35 @@ import { ToastService } from '../../core/services/toast.service';
                         </td>
                         <td>
                           @if (user.id !== supabase.currentUser()?.id) {
-                            <button 
-                              class="btn btn-secondary btn-sm"
-                              (click)="toggleUserRole(user)"
-                              [title]="'Cambiar a ' + (user.role === 'admin' ? 'Normal' : 'Admin')">
-                              Convertir a {{ user.role === 'admin' ? 'Normal' : 'Admin' }}
-                            </button>
+                            <div class="user-row-actions">
+                              <button 
+                                class="btn btn-secondary btn-sm"
+                                (click)="toggleUserRole(user)"
+                                [disabled]="deletingUserId() === user.id"
+                                [title]="'Cambiar a ' + (user.role === 'admin' ? 'Normal' : 'Admin')">
+                                Convertir a {{ user.role === 'admin' ? 'Normal' : 'Admin' }}
+                              </button>
+                              <button 
+                                class="btn btn-danger btn-sm btn-delete-user"
+                                (click)="handleDeleteUser(user)"
+                                [disabled]="deletingUserId() === user.id"
+                                [title]="'Eliminar permanentemente a ' + user.email">
+                                @if (deletingUserId() === user.id) {
+                                  <span class="spinner-sm"></span>
+                                  <span>Borrando...</span>
+                                } @else {
+                                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                  </svg>
+                                  <span>Eliminar</span>
+                                }
+                              </button>
+                            </div>
                           } @else {
-                            <span class="text-muted text-sm">Sesión activa</span>
+                            <span class="text-muted text-sm">Sesión activa (Tú)</span>
                           }
                         </td>
                       </tr>
@@ -352,6 +373,19 @@ import { ToastService } from '../../core/services/toast.service';
       font-size: 0.75rem;
     }
 
+    .user-row-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-delete-user {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
     .modal-footer {
       padding: 1rem 1.5rem;
       border-top: 1px solid var(--border-subtle);
@@ -444,6 +478,7 @@ export class UserManagerModalComponent implements OnInit {
   readonly profiles = signal<UserProfile[]>([]);
   readonly isLoadingProfiles = signal<boolean>(false);
   readonly isSubmitting = signal<boolean>(false);
+  readonly deletingUserId = signal<string | null>(null);
 
   newEmail = '';
   newName = '';
@@ -518,6 +553,33 @@ export class UserManagerModalComponent implements OnInit {
     } else {
       this.toast.success('Rol actualizado', `"${user.email}" ahora es ${actionText}.`);
       await this.loadProfiles();
+    }
+  }
+
+  async handleDeleteUser(user: UserProfile): Promise<void> {
+    if (user.id === this.supabase.currentUser()?.id) {
+      this.toast.error('Acción denegada', 'No puedes eliminar tu propia cuenta de administrador.');
+      return;
+    }
+
+    const confirmDelete = confirm(
+      `¿Estás seguro de que deseas eliminar permanentemente al usuario "${user.full_name || user.email}" (${user.email})?\n\nEsta acción eliminará su cuenta y acceso al sistema.`
+    );
+    if (!confirmDelete) return;
+
+    this.deletingUserId.set(user.id);
+    try {
+      const { error } = await this.supabase.deleteUser(user.id);
+      if (error) {
+        this.toast.error('Error al eliminar usuario', error.message);
+      } else {
+        this.toast.success('Usuario Eliminado', `Se eliminó el usuario "${user.email}" correctamente.`);
+        await this.loadProfiles();
+      }
+    } catch (err: any) {
+      this.toast.error('Error al eliminar', err.message || 'Error inesperado');
+    } finally {
+      this.deletingUserId.set(null);
     }
   }
 }

@@ -37,6 +37,36 @@ BEGIN
 END;
 $$;
 
+-- 3.1 FUNCIÓN PARA QUE UN ADMINISTRADOR PUEDA ELIMINAR USUARIOS (SECURITY DEFINER)
+-- Permite al Admin borrar un usuario de auth.users y public.profiles sin exponer llaves secretas
+CREATE OR REPLACE FUNCTION public.delete_user_by_admin(target_user_id UUID)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+BEGIN
+    -- 1. Validar que quien invoca la función sea un Administrador
+    IF NOT public.is_admin() THEN
+        RAISE EXCEPTION 'Permiso denegado: solo administradores pueden eliminar usuarios.';
+    END IF;
+
+    -- 2. Evitar que el administrador se autoelimine
+    IF target_user_id = auth.uid() THEN
+        RAISE EXCEPTION 'No puedes eliminar tu propia cuenta de administrador.';
+    END IF;
+
+    -- 3. Eliminar de auth.users (el cascade elimina de profiles)
+    DELETE FROM auth.users WHERE id = target_user_id;
+
+    -- 4. Borrar de profiles en caso de inconsistencia
+    DELETE FROM public.profiles WHERE id = target_user_id;
+END;
+$$;
+
+-- Otorgar permiso de ejecución a usuarios autenticados (la validación interna chequea is_admin)
+GRANT EXECUTE ON FUNCTION public.delete_user_by_admin(UUID) TO authenticated;
+
 -- 4. TRIGGER PARA CREAR AUTOMÁTICAMENTE EL PERFIL CUANDO SE REGISTRE UN USUARIO EN AUTH.USERS
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
