@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { InventoryListComponent } from './components/inventory-list/inventory-list.component';
 import { ToastContainerComponent } from './components/toast-container/toast-container.component';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
@@ -12,6 +13,7 @@ import { UserManagerModalComponent } from './components/user-manager-modal/user-
   imports: [
     CommonModule,
     NavbarComponent,
+    SidebarComponent,
     InventoryListComponent,
     ToastContainerComponent,
     AuthModalComponent,
@@ -22,6 +24,23 @@ import { UserManagerModalComponent } from './components/user-manager-modal/user-
 })
 export class App {
   readonly title = signal('Inventario-ID');
+  readonly sidebarOpen = signal<boolean>(false);
   readonly showAuthModal = signal<boolean>(false);
   readonly showUserManagerModal = signal<boolean>(false);
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent): void {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+      event.preventDefault();
+      const searchInput = document.getElementById('equipmentSearch') as HTMLInputElement;
+      if (searchInput) {
+        searchInput.focus();
+      }
+    }
+  }
+
+  onTabSelected(tab: string): void {
+    // If future routing is added, handle it here
+    console.log('Tab selected:', tab);
+  }
 }

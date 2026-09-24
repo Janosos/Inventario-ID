@@ -8,112 +8,94 @@ import { ThemeService } from '../../core/services/theme.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <header class="navbar-wrapper">
-      <div class="navbar-container">
-        <!-- Logo & Branding -->
-        <div class="brand-group">
-          <div class="brand-logo">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-              <line x1="8" y1="21" x2="16" y2="21"></line>
-              <line x1="12" y1="17" x2="12" y2="21"></line>
-            </svg>
-          </div>
-          <div class="brand-info">
-            <div class="brand-title">
-              <span>Inventario-ID</span>
-              <span class="status-indicator status-online" title="Conectado a Supabase"></span>
+    <header class="navbar-root">
+      <div class="navbar-inner">
+        <!-- Left: Mobile Toggle & Brand Logo -->
+        <div class="brand-cluster">
+          <button class="mobile-menu-btn lg-hidden" (click)="toggleSidebar.emit()" aria-label="Menú lateral">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+
+          <div class="brand-box">
+            <div class="brand-chip-icon">
+              <span class="material-symbols-outlined text-primary">memory</span>
             </div>
-            <span class="brand-subtitle">Control de Equipos de Cómputo</span>
+            <div class="brand-texts">
+              <div class="brand-title-row">
+                <span class="brand-title">Inventario-ID</span>
+                <span class="version-tag">v2.4</span>
+              </div>
+              <span class="brand-subtitle">Control & Gestión IT Empresarial</span>
+            </div>
           </div>
         </div>
 
-        <!-- Role Badge Area -->
-        <div class="role-center-area">
-          <div class="role-badge-container">
-            <span class="role-label">Tu Rol:</span>
-            @if (supabase.isAdmin()) {
-              <span class="badge badge-admin">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                </svg>
-                ADMINISTRADOR
-              </span>
-            } @else {
-              <span class="badge badge-normal">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                USUARIO NORMAL (Solo Lectura)
-              </span>
-            }
-          </div>
-        </div>
-
-        <!-- Right Controls -->
-        <div class="actions-group">
-          <!-- Admin User Management Button -->
+        <!-- Center: Role Indicator -->
+        <div class="role-center-cluster">
           @if (supabase.isAdmin()) {
-            <button 
-              class="btn btn-secondary btn-sm user-mgmt-btn"
-              (click)="openUsers.emit()"
-              title="Gestionar usuarios y crear cuentas de Administrador o Normal">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-              <span>Gestionar Usuarios</span>
+            <div class="role-tag-box role-admin-box">
+              <span class="material-symbols-outlined text-tertiary">verified_user</span>
+              <span class="role-name-text text-tertiary">ADMINISTRADOR</span>
+            </div>
+          } @else {
+            <div class="role-tag-box role-normal-box">
+              <span class="material-symbols-outlined text-secondary">person</span>
+              <span class="role-name-text text-secondary">USUARIO NORMAL</span>
+            </div>
+          }
+        </div>
+
+        <!-- Right: Status, Actions, Profile -->
+        <div class="actions-cluster">
+          <!-- Connection Status Telemetry -->
+          <div class="telemetry-badge">
+            <div class="beacon-wrap">
+              <span class="beacon-ping"></span>
+              <span class="beacon-dot"></span>
+            </div>
+            <div class="telemetry-text">
+              <span class="telemetry-status">Supabase Conectado</span>
+              <span class="telemetry-sub">Sync: En vivo</span>
+            </div>
+          </div>
+
+          <!-- Admin User Management Action -->
+          @if (supabase.isAdmin()) {
+            <button class="btn btn-secondary btn-sm admin-btn" (click)="openUsers.emit()" title="Gestionar Usuarios y Roles">
+              <span class="material-symbols-outlined">group</span>
+              <span class="btn-text-desktop">Usuarios</span>
             </button>
           }
 
           <!-- Theme Toggle -->
           <button 
-            class="btn btn-ghost btn-icon" 
+            class="btn btn-ghost btn-icon-sm" 
             (click)="theme.toggleTheme()" 
-            [attr.aria-label]="theme.currentTheme() === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
-            title="Cambiar tema">
+            [title]="theme.currentTheme() === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
             @if (theme.currentTheme() === 'dark') {
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="5"></circle>
-                <line x1="12" y1="1" x2="12" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="23"></line>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                <line x1="1" y1="12" x2="3" y2="12"></line>
-                <line x1="21" y1="12" x2="23" y2="12"></line>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-              </svg>
+              <span class="material-symbols-outlined text-primary">light_mode</span>
             } @else {
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-              </svg>
+              <span class="material-symbols-outlined">dark_mode</span>
             }
           </button>
 
-          <!-- Auth Button (Login / Logout) -->
+          <!-- User Menu / Auth Button -->
           @if (supabase.currentUser()) {
-            <div class="user-menu">
-              <span class="user-email" [title]="supabase.currentUser()?.email">{{ supabase.currentUser()?.email }}</span>
-              <button class="btn btn-ghost btn-sm" (click)="supabase.signOut()" title="Cerrar Sesión">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                  <polyline points="16 17 21 12 16 7"></polyline>
-                  <line x1="21" y1="12" x2="9" y2="12"></line>
-                </svg>
-                <span>Salir</span>
+            <div class="user-profile-cluster">
+              <div class="user-avatar-circle">
+                <span class="material-symbols-outlined">person</span>
+              </div>
+              <div class="user-text-meta">
+                <span class="user-email-header">{{ supabase.currentUser()?.email }}</span>
+                <span class="user-role-sub">{{ supabase.isAdmin() ? 'SYSADMIN_L3' : 'OPERADOR_L1' }}</span>
+              </div>
+              <button class="btn-logout" (click)="supabase.signOut()" title="Cerrar Sesión">
+                <span class="material-symbols-outlined">logout</span>
               </button>
             </div>
           } @else {
             <button class="btn btn-primary btn-sm" (click)="openAuth.emit()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                <polyline points="10 17 15 12 10 7"></polyline>
-                <line x1="15" y1="12" x2="3" y2="12"></line>
-              </svg>
+              <span class="material-symbols-outlined">login</span>
               <span>Acceder</span>
             </button>
           }
@@ -122,131 +104,298 @@ import { ThemeService } from '../../core/services/theme.service';
     </header>
   `,
   styles: [`
-    .navbar-wrapper {
-      position: sticky;
+    .navbar-root {
+      position: fixed;
       top: 0;
-      z-index: 100;
-      background: var(--bg-surface);
+      left: 0;
+      right: 0;
+      height: 4rem;
+      z-index: 50;
+      background-color: rgba(15, 19, 28, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border-subtle);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      transition: background-color var(--duration-fast) var(--ease-out);
+      box-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
     }
 
-    .navbar-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0.75rem 1.5rem;
+    .dark .navbar-root {
+      background-color: rgba(15, 19, 28, 0.92);
+    }
+
+    :host-context(.light) .navbar-root {
+      background-color: rgba(255, 255, 255, 0.94);
+    }
+
+    .navbar-inner {
+      height: 100%;
+      width: 100%;
+      padding: 0 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
     }
 
-    .brand-group {
+    .brand-cluster {
       display: flex;
       align-items: center;
       gap: 0.85rem;
     }
 
-    .brand-logo {
+    .mobile-menu-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0.35rem;
+      border-radius: var(--radius-sm);
+    }
+
+    @media (min-width: 1025px) {
+      .lg-hidden {
+        display: none !important;
+      }
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-chip-icon {
       width: 2.5rem;
       height: 2.5rem;
       border-radius: var(--radius-md);
-      background: linear-gradient(135deg, var(--brand-primary), var(--accent-indigo));
-      color: #ffffff;
+      background-color: var(--surface-container);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 14px var(--brand-glow);
+      box-shadow: var(--shadow-glow-blue);
+      border: 1px solid var(--border-subtle);
     }
 
-    .brand-info {
+    .brand-chip-icon .material-symbols-outlined {
+      font-size: 22px;
+      color: var(--primary);
+    }
+
+    .brand-texts {
       display: flex;
       flex-direction: column;
     }
 
-    .brand-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+    .brand-title-row {
       display: flex;
       align-items: center;
       gap: 0.45rem;
-      color: var(--text-primary);
     }
 
-    .status-indicator {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background-color: var(--accent-emerald);
-      display: inline-block;
-      box-shadow: 0 0 8px var(--accent-emerald);
+    .brand-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .version-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      background: rgba(137, 206, 255, 0.12);
+      color: var(--primary);
+      padding: 0.1rem 0.35rem;
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
     }
 
     .brand-subtitle {
-      font-size: 0.75rem;
+      font-size: 0.725rem;
       color: var(--text-muted);
+      line-height: 1.2;
     }
 
-    .role-center-area {
+    .role-center-cluster {
       display: flex;
       align-items: center;
     }
 
-    .role-badge-container {
+    .role-tag-box {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: 0.725rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .role-admin-box {
+      background: var(--surface-high);
+      border: 1px solid rgba(255, 185, 95, 0.25);
+    }
+
+    .role-admin-box .text-tertiary {
+      color: var(--tertiary);
+    }
+
+    .role-normal-box {
+      background: var(--surface-container);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .role-normal-box .text-secondary {
+      color: var(--secondary);
+    }
+
+    .actions-cluster {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .telemetry-badge {
       display: flex;
       align-items: center;
       gap: 0.6rem;
-      background-color: var(--bg-muted);
-      padding: 0.35rem 0.75rem;
-      border-radius: var(--radius-full);
-      border: 1px solid var(--border-subtle);
-    }
-
-    .role-label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .actions-group {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-    }
-
-    .user-mgmt-btn {
-      font-size: 0.775rem;
-      border-color: rgba(99, 102, 241, 0.3);
-    }
-
-    .user-menu {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--bg-muted);
-      padding: 0.25rem 0.65rem;
+      padding: 0.35rem 0.65rem;
       border-radius: var(--radius-md);
+      background: var(--surface-low);
       border: 1px solid var(--border-subtle);
     }
 
-    .user-email {
-      font-size: 0.775rem;
-      max-width: 150px;
+    .beacon-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 0.65rem;
+      height: 0.65rem;
+    }
+
+    .beacon-ping {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: var(--secondary);
+      opacity: 0.75;
+      animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+
+    .beacon-dot {
+      position: relative;
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
+      background-color: var(--secondary);
+    }
+
+    @keyframes ping {
+      75%, 100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    .telemetry-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .telemetry-status {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    .telemetry-sub {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      color: var(--text-outline);
+    }
+
+    .admin-btn {
+      border-color: rgba(14, 165, 233, 0.3);
+    }
+
+    .user-profile-cluster {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding-left: 0.4rem;
+    }
+
+    .user-avatar-circle {
+      width: 2rem;
+      height: 2rem;
+      border-radius: var(--radius-full);
+      background-color: var(--primary);
+      color: var(--on-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 10px rgba(137, 206, 255, 0.3);
+    }
+
+    .user-avatar-circle .material-symbols-outlined {
+      font-size: 18px;
+    }
+
+    .user-text-meta {
+      display: flex;
+      flex-direction: column;
+      text-align: right;
+    }
+
+    .user-email-header {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      max-width: 140px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      color: var(--text-secondary);
+    }
+
+    .user-role-sub {
       font-family: var(--font-mono);
+      font-size: 0.625rem;
+      color: var(--text-muted);
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0.4rem;
+      border-radius: var(--radius-md);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .btn-logout:hover {
+      background-color: var(--error-container);
+      color: var(--error);
     }
 
     @media (max-width: 900px) {
-      .role-center-area {
+      .role-center-cluster {
         display: none;
       }
-      .brand-subtitle {
+      .telemetry-badge {
+        display: none;
+      }
+      .user-text-meta {
         display: none;
       }
     }
@@ -256,6 +405,7 @@ export class NavbarComponent {
   readonly supabase = inject(SupabaseService);
   readonly theme = inject(ThemeService);
 
+  @Output() toggleSidebar = new EventEmitter<void>();
   @Output() openUsers = new EventEmitter<void>();
   @Output() openAuth = new EventEmitter<void>();
 }

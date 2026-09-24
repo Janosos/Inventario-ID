@@ -1,10 +1,17 @@
 <div class="app-root-layout">
   <app-navbar 
+    (toggleSidebar)="sidebarOpen.set(!sidebarOpen())"
     (openUsers)="showUserManagerModal.set(true)" 
     (openAuth)="showAuthModal.set(true)">
   </app-navbar>
 
-  <main class="main-content">
+  <app-sidebar 
+    [isOpen]="sidebarOpen()"
+    (closeSidebar)="sidebarOpen.set(false)"
+    (tabSelected)="onTabSelected($event)">
+  </app-sidebar>
+
+  <main class="main-content-layout">
     <app-inventory-list></app-inventory-list>
   </main>
 
