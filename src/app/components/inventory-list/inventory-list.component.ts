@@ -355,7 +355,7 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
                         type="button" 
                         class="btn btn-danger btn-icon-sm" 
                         (click)="confirmDeleteItem(item)" 
-                        title="Dar de baja / Desincorporar">
+                        title="Eliminar equipo">
                         <span class="material-symbols-outlined icon-18">delete</span>
                       </button>
                     }
@@ -437,7 +437,7 @@ import { PhotoManagerComponent } from '../photo-manager/photo-manager.component'
                           <button type="button" class="btn-table-action hover-primary" (click)="openEditModal(item)" title="Editar Activo">
                             <span class="material-symbols-outlined icon-18">edit</span>
                           </button>
-                          <button type="button" class="btn-table-action hover-error" (click)="confirmDeleteItem(item)" title="Dar de baja">
+                          <button type="button" class="btn-table-action hover-error" (click)="confirmDeleteItem(item)" title="Eliminar equipo">
                             <span class="material-symbols-outlined icon-18">delete</span>
                           </button>
                         }
@@ -1661,7 +1661,7 @@ export class InventoryListComponent implements OnInit {
       return;
     }
 
-    if (!confirm(`¿Confirmas que deseas dar de baja o desincorporar el activo [${item.service_tag || item.name}]? Esta acción genera registro de auditoría.`)) {
+    if (!confirm(`¿Estás seguro de que deseas eliminar el equipo "${item.name}"${item.service_tag ? ' (ST: ' + item.service_tag + ')' : ''}?`)) {
       return;
     }
 
@@ -1669,7 +1669,7 @@ export class InventoryListComponent implements OnInit {
     if (error) {
       this.toast.error('Error al eliminar', error.message);
     } else {
-      this.toast.info('Activo desincorporado', `Activo ${item.service_tag || item.name} movido a histórico de bajas.`);
+      this.toast.success('Equipo eliminado', `Se eliminó "${item.name}" del inventario.`);
       this.loadInventory();
     }
   }
