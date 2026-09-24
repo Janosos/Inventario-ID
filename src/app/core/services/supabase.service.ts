@@ -110,8 +110,8 @@ export class SupabaseService {
    * Inicializa la conexión directa permanente con Supabase usando las credenciales del environment
    */
   initClient(): void {
-    const url = environment.supabaseUrl;
-    const anonKey = environment.supabaseAnonKey;
+    const url = environment.supabaseUrl || 'https://xcprikwhtdzwzlpbpqzk.supabase.co';
+    const anonKey = environment.supabaseAnonKey || 'sb_publishable_9dumeRI4l3X_FZSwhitjXg_NyU27iyd';
 
     if (url && anonKey && url.startsWith('http')) {
       try {
@@ -273,7 +273,9 @@ export class SupabaseService {
     }
 
     try {
-      const tempClient = createClient(environment.supabaseUrl, environment.supabaseAnonKey, {
+      const url = environment.supabaseUrl || 'https://xcprikwhtdzwzlpbpqzk.supabase.co';
+      const anonKey = environment.supabaseAnonKey || 'sb_publishable_9dumeRI4l3X_FZSwhitjXg_NyU27iyd';
+      const tempClient = createClient(url, anonKey, {
         auth: {
           persistSession: false,
           autoRefreshToken: false,
