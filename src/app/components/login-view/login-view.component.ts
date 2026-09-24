@@ -35,11 +35,8 @@ import { ThemeService } from '../../core/services/theme.service';
           </div>
           <h1 class="brand-title">Inventario-ID</h1>
           <p class="brand-subtitle">Control & Gestión IT Empresarial</p>
-          <div class="telemetry-badge">
-            <span class="pulse-dot"></span>
-            <span>ACCESO AUTORIZADO TI</span>
-          </div>
         </div>
+
 
         <!-- Mode Tabs -->
         <div class="auth-tabs">
@@ -142,18 +139,6 @@ import { ThemeService } from '../../core/services/theme.service';
             }
           </button>
         </form>
-
-        <!-- Information Footer -->
-        <div class="card-footer-info">
-          <div class="info-row">
-            <span class="material-symbols-outlined text-secondary icon-16">verified</span>
-            <span>Todos los activos y fotos se sincronizan en tiempo real para todos los usuarios.</span>
-          </div>
-          <div class="info-row">
-            <span class="material-symbols-outlined text-primary icon-16">shield</span>
-            <span>Edición y bajas exclusivas para cuenta Administrador.</span>
-          </div>
-        </div>
       </div>
     </div>
   `,
@@ -289,36 +274,6 @@ import { ThemeService } from '../../core/services/theme.service';
       font-size: 0.8125rem;
       color: var(--text-muted);
       margin: 0;
-    }
-
-    .telemetry-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-top: 0.5rem;
-      padding: 0.2rem 0.65rem;
-      border-radius: var(--radius-full);
-      background-color: var(--surface-container);
-      border: 1px solid var(--border-subtle);
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      font-weight: 600;
-      color: var(--primary);
-      letter-spacing: 0.05em;
-    }
-
-    .pulse-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 9999px;
-      background-color: var(--secondary);
-      box-shadow: 0 0 8px var(--secondary);
-      animation: pulse 1.8s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
     }
 
     /* Auth Tabs */
@@ -472,26 +427,8 @@ import { ThemeService } from '../../core/services/theme.service';
       font-size: 0.8125rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
     }
 
-    /* Footer Info */
-    .card-footer-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid var(--border-subtle);
-    }
-
-    .info-row {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      font-size: 0.725rem;
-      color: var(--text-muted);
-      line-height: 1.35;
-    }
 
     .spinner-sm {
       width: 1.1rem;
